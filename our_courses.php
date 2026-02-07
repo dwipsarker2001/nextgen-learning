@@ -6,19 +6,25 @@ include('includes/get_courses.php');
 include('includes/get_course_by_id.php');
 include('includes/fetch.php');
 
-// Pagination variables
+/*---------------------------------------------
+    Pagination variables
+---------------------------------------------*/
 $limit = 8; // Records per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Course price
+/*---------------------------------------------
+    Course price filtering
+---------------------------------------------*/
 $conditions = match ($_GET['type'] ?? '') {
   'free' => "price = 0",
   'paid' => "price > 0",
   default => '1'
 };
 
-// Fetch courses
+/*---------------------------------------------
+    Fetch courses from database
+---------------------------------------------*/
 $result = fetch_records($conn, 'courses', [
   'conditions' => $conditions,
   'limit' => $limit,
@@ -30,11 +36,14 @@ $total_records = $result['total'];
 $total_pages = ceil($total_records / $limit);
 $start_record = ($page - 1) * $limit + 1;
 $end_record = min($start_record + $limit - 1, $total_records);
+
 $page_title = "Our Courses | Nextgen Learning";
 ob_start();
 ?>
 
-<!-- Page Banner START -->
+<!---------------------------------------------
+            PAGE BANNER START
+--------------------------------------------->
 <?php if (!empty($courses)) { 
   $type = $_GET['type'] ?? null;
   $type_labels = ['free' => 'Free Courses', 'paid' => 'Paid Courses'];
@@ -43,13 +52,15 @@ ob_start();
   <div class="container">
     <div class="row">
       <div class="col-12">
+        <!-- Banner card -->
         <div class="bg-light p-4 text-center rounded-3">
 
+          <!-- Page Title -->
           <h2 class="m-0">
             Explore <?= $type_labels[$type] ?? 'Courses' ?>
           </h2>
 
-          <!-- Breadcrumb -->
+          <!-- Breadcrumb START -->
           <div class="d-flex justify-content-center">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb breadcrumb-dots mb-0">
@@ -62,33 +73,50 @@ ob_start();
               </ol>
             </nav>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 </section>
 <?php } ?>
-<!-- Page Banner END -->
 
-<!-- Page content START -->
+<!---------------------------------------------
+            PAGE CONTENT START
+--------------------------------------------->
 <section class="pt-0">
   <div class="container">
     <div class="row mt-3">
+      
       <!-- Main content START -->
       <div class="col-12">
         <div class="row g-4">
+
           <?php
           if (!empty($courses)) {
             foreach ($courses as $course):
+              
+              /*---------------------------------------------
+                  Fetch Instructor Info
+              ---------------------------------------------*/
               $instructor = fetch_record($conn, 'users', $course['instructor_id']);
               $instructor_name = $instructor['first_name'] . " " . $instructor['last_name'];
               $instructor_avatar = $instructor['avatar'];
+
+              /*---------------------------------------------
+                  Include Course Card Component
+              ---------------------------------------------*/
               include './components/course_card_v2.php';
+
             endforeach;
 
-            // pagination
+            /*---------------------------------------------
+                Include Pagination Component
+            ---------------------------------------------*/
             include './components/pagination_v2.php';
+
           } else { ?>
+            <!-- No courses message -->
             <div class="col-12 text-center">
               <h1 class="display-5 text-danger mb-0">No Courses Yet</h1>
               <h2>Courses have not been uploaded.</h2>
@@ -96,13 +124,18 @@ ob_start();
               <a href="index.php" class="btn btn-primary mb-0">Go to Homepage</a>
             </div>
           <?php } ?>
+
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
 <?php
+/*---------------------------------------------
+    Capture content and include layout
+---------------------------------------------*/
 $content = ob_get_clean();
 include('layouts/website.php');
 ?>

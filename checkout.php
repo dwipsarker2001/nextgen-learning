@@ -61,7 +61,7 @@ ob_start();
         <?php endif; ?>
 
         <!-- Billing Information START -->
-        <div class="card card-body shadow border p-4">
+        <div class="card card-body shadow-sm border p-4">
           <h5 class="mb-0 mt-3">Billing Details</h5>
           <form action="includes/process_payment.php" method="POST" class="row g-3 mt-0">
             <input type="hidden" name="course_id" value="<?= htmlspecialchars($course['id']) ?>">
@@ -86,36 +86,36 @@ ob_start();
                 HOW TO PAY START
         --------------------------------------------->
 
-        <div class="card card-body shadow border p-4 mt-3">
+        <div class="card card-body shadow-sm border p-4 mt-3">
           <h5 class="mb-3">How to pay</h5>
           <ul class="list-group list-group-borderless pt-3">
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              <strong style="color: #E2136E;">Bkash Number : 01752684239</strong>
+              <strong style="color: #E2136E;">bKash Number: 01752684239</strong>
             </li>
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              bKash অ্যাপ বা *247# ডায়াল করে উপরের Personal Number-এ নির্ধারিত টাকা পাঠান।
+              Send the required amount to the above Personal Number using the bKash app or by dialing *247#.
             </li>
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              Billing Details এ সঠিক ভাবে Phone Number, Transaction ID প্রদান করুন।
+              Enter the correct Phone Number and Transaction ID in the Billing Details section.
             </li>
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              আপনি যে bKash নম্বর থেকে টাকা পাঠিয়েছেন, তা "Your bKash Account Number" বক্সে লিখুন।
+              Enter the bKash number you used to send the payment in the "Your bKash Account Number" field.
             </li>
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              টাকা পাঠানোর পর bKash থেকে পাওয়া SMS-এর TrxID "bKash Transaction ID" বক্সে লিখুন।
+              Enter the TrxID received via SMS from bKash in the "bKash Transaction ID" field.
             </li>
             <li class="list-group-item h6 fw-light d-flex mb-0">
               <i class="fas fa-info-circle text-primary me-2"></i>
-              উপরের ধাপ 01 থেকে 05 সম্পূর্ণ করে থাকলে Complete Payment এ Click করুন। [NB: 1.85% bKash "Send Money" fee will be added to the net price.]
+              After completing steps 01 to 05, click on <strong>Complete Payment</strong>.
+              <small>[NB: A 1.85% bKash “Send Money” fee will be added to the net price.]</small>
             </li>
           </ul>
         </div>
-
       </div>
 
       <!---------------------------------------------
@@ -123,7 +123,7 @@ ob_start();
       --------------------------------------------->
 
       <div class="col-12 col-md-4">
-        <div class="card card-body shadow border p-4">
+        <div class="card shadow-sm card-body border p-4">
           <h5 class="mb-2">Order Summary</h5>
           <hr>
 
@@ -143,20 +143,10 @@ ob_start();
 
           <ul class="list-group list-group-borderless mb-2" style="border: 0;">
             <li class="list-group-item px-0 d-flex justify-content-between">
-              <span class="h6 fw-light mb-0">Original Price</span>
-              <span class="h6 fw-light mb-0 fw-bold">৳ <?= $course['price'] ?></span>
-            </li>
-            <li class="list-group-item px-0 d-flex justify-content-between">
-              <span class="h6 fw-light mb-0">Coupon Discount</span>
-              <span class="text-danger">-৳ 0</span>
-            </li>
-            <li class="list-group-item px-0 d-flex justify-content-between">
               <span class="h5 mb-0">Total</span>
               <span class="h5 mb-0">৳ <?= $course['price'] ?></span>
             </li>
           </ul>
-
-          <p class="small mb-0 mt-2 text-center">By completing your purchase, you agree to these <a href="#"><strong>Terms of Service</strong></a></p>
         </div>
       </div>
 

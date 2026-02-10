@@ -69,7 +69,27 @@ ob_start();
               </div>
               <div class="card-body">
                 <div class="row g-5">
-                  <!-- -------------------- -->
+                  <?php foreach ($course['lectures'] as $lecture): ?>
+                    <div class="col-12">
+                      <h5 class="mb-4"><?= $lecture['title'] ?> (<?= count($lecture['topics']) ?> lectures)</h5>
+                      <?php foreach ($lecture['topics'] as $index => $topic): ?>
+                        <div class="d-sm-flex justify-content-sm-between align-items-center">
+                          <div class="d-flex">
+                            <a href="#" class="btn d-flex align-items-center justify-content-center btn-danger-soft btn-round mb-0 text-center">
+                                <i class="fas fa-play"></i>
+                            </a>
+                            <div class="ms-2 ms-sm-3 mt-1 mt-sm-0">
+                              <h6 class="mb-0"><?= $topic['title'] ?></h6>
+                              <p class="mb-2 mb-sm-0 small">10m 56s</p>
+                            </div>
+                          </div>
+                        </div>
+                        <?php if ($index !== array_key_last($lecture['topics'])): ?>
+                          <hr>
+                        <?php endif; ?>
+                      <?php endforeach ?>
+                    </div>
+                  <?php endforeach ?>
                   <a class="mb-0 mt-4 btn-more d-flex align-items-center justify-content-center" data-bs-toggle="collapse" href="#collapseCourse" role="button" aria-expanded="false" aria-controls="collapseCourse">
                     See <span class="see-more mx-1">more</span><span class="see-less mx-1">less</span> video<i class="fas fa-angle-down ms-2"></i>
                   </a>

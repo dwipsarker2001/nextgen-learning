@@ -28,9 +28,6 @@
           <?= $course['title'] ?>
         </a>
       </h5>
-      <p class="mb-2 text-truncate-2">
-        <?= $course['short_desc'] ?>
-      </p>
     </div>
     <!-- Card footer -->
     <div class="card-footer pt-0 bg-transparent">

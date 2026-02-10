@@ -10,8 +10,8 @@ include 'includes/fetch.php';
 $courses = fetch_records($conn, 'courses', ['limit' => 3])['data'];
 $page_title = "Home | NextGen Learning";
 ob_start();
-
 ?>
+
 <!---------------------------------------------
 			Banner area start
 --------------------------------------------->
@@ -31,10 +31,6 @@ ob_start();
 					<!-- Title -->
 					<h1 class="text-white display-5">Learn from <span class="text-warning">Bangladesh's Best Educators</span></h1>
 					<p class="text-white">Affordable, accessible, and engaging online education for STEM, Arts, and Humanities. High-quality courses designed for students in Bangladesh and beyond.</p>
-					
-					<div class="d-sm-flex align-items-center mt-4">
-						<a href="our_courses.php?type=paid" class="btn btn-primary me-2 mb-4 mb-sm-0">Browse Courses</a>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -44,33 +40,14 @@ ob_start();
 <!---------------------------------------------
 			Feature START 
 --------------------------------------------->
-<section class="position-relative">
+<section class="position-relative" style="padding: 150px 0;">
 	<div class="container">
 		<div class="row g-4">
 			<!-- Title -->
-			<div class="col-sm-6 col-lg-4">
-				<h2>Why Choose NextGen Learning</h2>
-				<p class="mb-0">We combine affordability with quality, providing locally relevant content with global standards of education.</p>
-			</div>
-
-			<!-- Feature item -->
-			<div class="col-sm-6 col-lg-4">
-				<div class="card card-body bg-light p-4 h-100">
-					<!-- Svg image decoration -->
-					<figure>
-						<svg class="fill-primary" width="63.28px" height="47.41px" viewBox="0 0 63.28 47.41" style="enable-background:new 0 0 63.28 47.41;">
-							<path d="M61.99,43.13c-0.11,0-0.22-0.02-0.32-0.05l-13.04-4.35c-0.42-0.14-0.7-0.53-0.7-0.97V24.41c0-0.44,0.28-0.83,0.7-0.97 l13.04-4.35c0.31-0.11,0.66-0.05,0.93,0.14c0.27,0.19,0.43,0.5,0.43,0.83V42.1c0,0.33-0.16,0.64-0.43,0.83 C62.41,43.06,62.2,43.13,61.99,43.13z M49.97,37.01l10.99,3.66V21.49l-10.99,3.66V37.01z"/>
-							<path d="M41.25,37.73H2.4c-0.57,0-1.03-0.46-1.03-1.03v-5.28c0-0.57,0.46-1.03,1.03-1.03h38.85c2.02,0,3.67,1.65,3.67,3.67 S43.27,37.73,41.25,37.73z M3.43,35.68h37.82c0.89,0,1.62-0.72,1.62-1.62c0-0.89-0.72-1.62-1.62-1.62H3.43V35.68z"/>
-							<path d="M57.02,33.7c-0.57,0-1.03-0.46-1.03-1.03V21.72c0-0.57,0.46-1.03,1.03-1.03c0.57,0,1.03,0.46,1.03,1.03v10.95 C58.05,33.24,57.59,33.7,57.02,33.7z"/>
-							<path d="M15.11,24.9c-6.2,0-11.24-5.04-11.24-11.24S8.91,2.41,15.11,2.41s11.24,5.04,11.24,11.24S21.3,24.9,15.11,24.9z  M15.11,4.47c-5.07,0-9.19,4.12-9.19,9.19c0,5.07,4.12,9.19,9.19,9.19s9.19-4.12,9.19-9.19C24.29,8.59,20.17,4.47,15.11,4.47z"/>
-							<path d="M15.11,18.8c-2.84,0-5.14-2.31-5.14-5.14c0-2.84,2.31-5.14,5.14-5.14c2.84,0,5.14,2.31,5.14,5.14 C20.25,16.49,17.94,18.8,15.11,18.8z M15.11,10.57c-1.7,0-3.09,1.39-3.09,3.09c0,1.7,1.39,3.09,3.09,3.09 c1.7,0,3.09-1.39,3.09-3.09C18.19,11.95,16.81,10.57,15.11,10.57z"/>
-							<path d="M35.54,18.8c-2.84,0-5.14-2.31-5.14-5.14c0-2.84,2.31-5.14,5.14-5.14c2.84,0,5.14,2.31,5.14,5.14 C40.68,16.49,38.37,18.8,35.54,18.8z M35.54,10.57c-1.7,0-3.09,1.39-3.09,3.09c0,1.7,1.39,3.09,3.09,3.09 c1.7,0,3.09-1.39,3.09-3.09C38.62,11.95,37.24,10.57,35.54,10.57z"/>
-							<path d="M35.54,24.9c-6.2,0-11.24-5.04-11.24-11.24S29.34,2.41,35.54,2.41s11.24,5.04,11.24,11.24S41.73,24.9,35.54,24.9z  M35.54,4.47c-5.07,0-9.19,4.12-9.19,9.19c0,5.07,4.12,9.19,9.19,9.19s9.19-4.12,9.19-9.19C44.72,8.59,40.6,4.47,35.54,4.47z"/>
-							<path d="M47.15,44.93H4.2c-1.56,0-2.83-1.27-2.83-2.83V20.06c0-1.56,1.27-2.83,2.83-2.83H6c0.57,0,1.03,0.46,1.03,1.03 c0,0.57-0.46,1.03-1.03,1.03H4.2c-0.43,0-0.77,0.35-0.77,0.77V42.1c0,0.43,0.35,0.77,0.77,0.77h42.95c0.43,0,0.77-0.35,0.77-0.77 V20.06c0-0.43-0.35-0.77-0.77-0.77h-2.51c-0.57,0-1.03-0.46-1.03-1.03c0-0.57,0.46-1.03,1.03-1.03h2.51c1.56,0,2.83,1.27,2.83,2.83 V42.1C49.97,43.66,48.71,44.93,47.15,44.93z"/>
-						</svg>
-					</figure>
-					<h5>Live Interactive Classes</h5>
-					<p class="mb-0">Engage with expert instructors in real-time through live sessions with Q&A support and instant feedback.</p>
+			<div class="row mb-4">
+				<div class="col-md-8 text-center mx-auto">
+					<h2 class="fs-1">Why Choose NextGen Learning</h2>
+					<p class="mb-0">We combine affordability with quality, providing locally relevant content with global standards of education.</p>
 				</div>
 			</div>
 
@@ -102,27 +79,6 @@ ob_start();
 					</figure>
 					<h5>Expert Instructors</h5>
 					<p class="mb-0">Learn from Bangladesh's top educators who bring local context and global expertise to every course.</p>
-				</div>
-			</div>
-
-			<!-- Feature item -->
-			<div class="col-sm-6 col-lg-4">
-				<div class="card card-body bg-light p-4 h-100">
-					<!-- Svg image decoration -->
-					<figure>
-						<svg class="fill-purple" width="54.22px" height="52.86px" viewBox="0 0 54.22 52.86" style="enable-background:new 0 0 54.22 52.86;">
-							<path d="M32.48,50.83H15.21c-0.45,0-0.82-0.37-0.82-0.82v-2.73c0-1.21-0.91-2.24-2.11-2.39L9.9,44.58 c-2.02-0.26-3.54-1.99-3.54-4.03V34.8l-2.94,0.02c-0.59,0-1.11-0.3-1.41-0.81C1.72,33.5,1.72,32.9,2,32.39l2.63-4.63 c1.46-2.58,2.24-5.51,2.23-8.47c0-4.95,2.25-9.62,6.02-12.49c3.77-2.87,8.47-4.09,13.22-3.44c0.67,0.09,1.35,0.22,2,0.39 c0.44,0.11,0.7,0.56,0.59,1c-0.11,0.44-0.57,0.71-1,0.59c-0.59-0.15-1.2-0.27-1.81-0.36c-4.32-0.59-8.58,0.52-12,3.12 c-3.36,2.56-5.37,6.74-5.37,11.18c0,3.25-0.85,6.46-2.45,9.28L3.44,33.2l2.94-0.03C7.28,33.17,8,33.9,8,34.8v5.76 c0,1.21,0.91,2.24,2.11,2.39l2.38,0.31c2.02,0.26,3.54,1.99,3.54,4.03v1.9h15.62l-0.02-9.33c0-2.73,1.15-5.4,3.16-7.35 c0.66-0.64,1.27-1.33,1.81-2.07c0.27-0.37,0.78-0.45,1.15-0.18c0.37,0.27,0.45,0.79,0.18,1.15c-0.6,0.81-1.27,1.58-1.99,2.28 c-1.72,1.66-2.67,3.85-2.66,6.16l0.02,10.15c0,0.22-0.09,0.43-0.24,0.58C32.91,50.75,32.7,50.83,32.48,50.83z"/>
-							<path d="M43.22,50.83H2.18c-0.45,0-0.82-0.37-0.82-0.82c0-0.45,0.37-0.82,0.82-0.82h41.04c0.45,0,0.82,0.37,0.82,0.82 C44.05,50.47,43.68,50.83,43.22,50.83z"/>
-							<path d="M43.81,27.69H29.1c-0.45,0-0.82-0.37-0.82-0.82c0-0.45,0.37-0.82,0.82-0.82h14.72c0.45,0,0.82,0.37,0.82,0.82 C44.64,27.32,44.27,27.69,43.81,27.69z"/>
-							<path d="M45.79,18.58H31.84c-0.45,0-0.82-0.37-0.82-0.82c0-0.45,0.37-0.82,0.82-0.82h13.95c0.45,0,0.82,0.37,0.82,0.82 C46.61,18.21,46.24,18.58,45.79,18.58z"/>
-							<path d="M43.81,9.46H26.68c-0.45,0-0.82-0.37-0.82-0.82c0-0.45,0.37-0.82,0.82-0.82h17.13c0.45,0,0.82,0.37,0.82,0.82 C44.64,9.09,44.27,9.46,43.81,9.46z"/>
-							<path d="M46.59,12.23c-1.98,0-3.6-1.61-3.6-3.6s1.61-3.6,3.6-3.6s3.6,1.61,3.6,3.6S48.57,12.23,46.59,12.23z M46.59,6.69 c-1.07,0-1.95,0.87-1.95,1.95c0,1.07,0.87,1.95,1.95,1.95c1.07,0,1.95-0.87,1.95-1.95C48.54,7.56,47.66,6.69,46.59,6.69z"/>
-							<path d="M48.56,21.35c-1.98,0-3.6-1.61-3.6-3.6s1.61-3.6,3.6-3.6s3.6,1.61,3.6,3.6S50.55,21.35,48.56,21.35z M48.56,15.8 c-1.07,0-1.95,0.87-1.95,1.95c0,1.07,0.87,1.95,1.95,1.95c1.07,0,1.95-0.87,1.95-1.95C50.51,16.68,49.64,15.8,48.56,15.8z"/>
-							<path d="M46.59,30.46c-1.98,0-3.6-1.61-3.6-3.6s1.61-3.6,3.6-3.6s3.6,1.61,3.6,3.6S48.57,30.46,46.59,30.46z M46.59,24.92 c-1.07,0-1.95,0.87-1.95,1.95s0.87,1.95,1.95,1.95c1.07,0,1.95-0.87,1.95-1.95S47.66,24.92,46.59,24.92z"/>
-						</svg>
-					</figure>
-					<h5>Progress Tracking</h5>
-					<p class="mb-0">Monitor your learning journey with detailed progress tracking and personalized dashboards.</p>
 				</div>
 			</div>
 
@@ -177,124 +133,8 @@ ob_start();
 	</div>
 </section>
 
-<!-- -----------------------------------
-		Instructor grid START 
------------------------------------->
-<section>
-	<div class="container">
-		<!-- Title -->
-		<div class="row mb-4">
-			<div class="col-md-8 text-center mx-auto">
-				<h2 class="fs-1">Featured Courses With Expert Instructors</h2>
-				<p class="mb-0">Start your learning journey today. Browse our most popular courses taught by industry experts!</p>
-			</div>
-		</div>
-
-		<!-- Instructor grid -->
-		<div class="row g-4">
-      <?php foreach ($courses as $course):
-        $instructor = fetch_record($conn, 'users', $course['instructor_id']);
-        $instructor_name = $instructor['first_name'] . " " . $instructor['last_name'];
-        $instructor_avatar = $instructor['avatar'];
-        include './components/course_card.php';
-      endforeach; ?>
-		</div>
-
-	</div>
-</section>
 
 
-<!---------------------------------------------
-			FAQ START 
---------------------------------------------->
-<section class="pt-0 pt-md-5">
-	<div class="container">
-		<div class="row g-4">
-
-			<div class="col-lg-6 col-xl-5">
-				<!-- Title and button -->
-				<h2 class="fs-1">Frequently Asked Questions</h2>
-				<p class="mb-0">Find answers to common questions about NextGen Learning. Can't find what you're looking for? <a href="contact_us.php" class="text-decoration-underline">Contact our support team</a> anytime.</p>
-			</div>
-
-			<div class="col-lg-6 ms-xl-auto">
-				<!-- Accordion START -->
-				<div class="accordion accordion-icon accordion-bg-light" id="accordionFaq">
-					<!-- Accordion item -->
-					<div class="accordion-item">
-						<h2 class="accordion-header" id="headingOne">
-							<button class="accordion-button h6 rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-								What makes NextGen Learning different from other platforms?
-							</button>
-						</h2>
-						<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionFaq">
-							<div class="accordion-body">
-								NextGen Learning combines affordability with high-quality education specifically designed for students in Bangladesh and similar regions. We offer locally relevant content taught by expert instructors, live interactive classes, secure payment options including bKash and Nagad, and comprehensive progress tracking - all at prices that are accessible to the average student.
-							</div>
-						</div>
-					</div>
-
-					<!-- Accordion item -->
-					<div class="accordion-item">
-						<h2 class="accordion-header" id="headingTwo">
-							<button class="accordion-button h6 rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-								Can I try courses before purchasing?
-							</button>
-						</h2>
-						<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionFaq">
-							<div class="accordion-body">
-								Yes! We offer free trial courses so you can experience our teaching quality and platform features before making a purchase. You can browse course descriptions, check instructor profiles, and explore sample content to make an informed decision about which courses are right for you.
-							</div>
-						</div>
-					</div>
-
-					<!-- Accordion item -->
-					<div class="accordion-item">
-						<h2 class="accordion-header" id="headingThree">
-							<button class="accordion-button h6 rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-								What payment methods do you accept?
-							</button>
-						</h2>
-						<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionFaq">
-							<div class="accordion-body">
-								We support popular local payment methods including bKash and Nagad, as well as traditional payment cards. Our secure payment gateway ensures your transactions are safe and your financial information is protected.
-							</div>
-						</div>
-					</div>
-
-					<!-- Accordion item -->
-					<div class="accordion-item">
-						<h2 class="accordion-header" id="headingFour">
-							<button class="accordion-button h6 rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-								How do live classes work? 
-							</button>
-						</h2>
-						<div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionFaq">
-							<div class="accordion-body">
-								Our live classes feature real-time interaction with instructors through video sessions. You can ask questions, participate in discussions, and get instant feedback. All live sessions are scheduled in advance, and recordings are available for enrolled students who can't attend in real-time.
-							</div>
-						</div>
-					</div>
-
-					<!-- Accordion item -->
-					<div class="accordion-item">
-						<h2 class="accordion-header" id="headingFive">
-							<button class="accordion-button h6 rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-								Can I become an instructor on NextGen Learning? 
-							</button>
-						</h2>
-						<div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionFaq">
-							<div class="accordion-body">
-								Absolutely! We welcome expert educators who want to share their knowledge. As an instructor, you can create and upload course content, interact with students through our Q&A forums, and monetize your expertise. Simply register as a teacher, create your profile, and submit your course for admin approval to get started.
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- Accordion END -->
-			</div>
-		</div>
-	</div>
-</section>
 
 <?php
 $content = ob_get_clean();

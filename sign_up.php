@@ -109,7 +109,15 @@ ob_start();
                                     <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3">
                                         <i class="fas fa-phone"></i>
                                     </span>
-                                    <input type="number" class="form-control border-0 bg-light rounded-end ps-1" placeholder="Phone" name="phone" id="phone" required>
+                                    <input
+                                        type="tel"
+                                        class="form-control border-0 bg-light rounded-end ps-1"
+                                        placeholder="Phone"
+                                        name="phone"
+                                        id="phone"
+                                        pattern="[0-9]{11}"
+                                        required
+                                    >
                                 </div>
                             </div>
 
@@ -141,14 +149,6 @@ ob_start();
                                     <span class="input-group-text p-0 border-0" id="password-view-login" style="cursor: pointer;" onclick="togglePassword('inputPassword6')">
                                         <i class="far fa-eye cursor-pointer p-2 w-40px"></i>
                                     </span>
-                                </div>
-                            </div>
-
-                            <!-- Terms and Conditions -->
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="checkbox-1">
-                                    <label class="form-check-label" for="checkbox-1">By signing up, <a href="#">you agree to the terms and conditions.</a></label>
                                 </div>
                             </div>
 

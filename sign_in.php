@@ -37,7 +37,7 @@ ob_start();
             <!---------------------------------------------
                         Right Side: Login Form
             --------------------------------------------->
-            <div class="col-12 col-lg-6 m-auto">
+            <div class="col-12 col-lg-6 m-auto py-5">
                 <div class="row my-5">
                     <div class="col-sm-10 col-xl-8 m-auto">
 
@@ -60,8 +60,6 @@ ob_start();
                         }
                         ?>
 
-                        <!-- Emoji + Form Heading -->
-                        <span class="mb-0 fs-1">👋</span>
                         <h1 class="fs-2">Login.</h1>
                         <p class="lead mb-4">Login with your email and password.</p>
 

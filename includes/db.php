@@ -1,9 +1,9 @@
 <?php
 // Database configuration
-$host = 'db';
+$host = 'localhost';
 $username = 'root';
-$password = 'root';
-$dbname = 'digital-shikkhok';
+$password = '';
+$dbname = 'nextgen';
 
 // Create connection
 $conn = new mysqli($host, $username, $password, $dbname);

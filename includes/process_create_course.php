@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Map form fields to database columns
     $fields = [
       'title' => $_POST['title'] ?? '',
-      'short_desc' => $_POST['short_desc'] ?? '',
-      'description' => $_POST['description'] ?? '',
+      'short_desc' =>  '',
+      'description' => '',
       'thumbnail' => upload_image("../uploads/img/thumbnails/", "thumbnail"),
       'video' => $_POST['video'] ?? '',
       'duration' => $_POST['duration'] ?? '',

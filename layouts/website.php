@@ -68,16 +68,13 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                                 <a class="nav-link <?= is_active_page('index.php') ?>" href="index.php">Home</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link <?= is_active_page('about_us.php') ?>" href="about_us.php">About Us</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link <?= is_active_page('our_courses.php', 'type', 'free') ?>" href="our_courses.php?type=free">Free Courses</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link <?= is_active_page('our_courses.php', 'type', 'paid') ?>" href="our_courses.php?type=paid">Paid Courses</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= is_active_page('about_us.php') ?>" href="about_us.php">About Us</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?= is_active_page('contact_us.php') ?>" href="contact_us.php">Contact Us</a>
                             </li>
                         </ul>
                     </div>

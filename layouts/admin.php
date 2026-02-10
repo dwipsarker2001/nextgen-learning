@@ -33,6 +33,7 @@ $user = get_user($conn, $user_id);
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&amp;family=Roboto:wght@400;500;700&amp;display=swap">
 
+    
     <!-- Plugins CSS -->
     <link rel="stylesheet" type="text/css" href="../assets/vendor/font-awesome/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
@@ -102,12 +103,6 @@ $user = get_user($conn, $user_id);
                             <a href="all_instructors.php" class="nav-link <?= is_active_page('all_instructors.php') ?>">
                                 <i class="fas fa-chalkboard-teacher fa-fw me-2"></i>
                                 Instructor
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?= is_active_page('all_contact.php') ?>" href="all_contact.php">
-                                <i class="fas fa-inbox fa-fw me-2"></i>
-                                Inbox
                             </a>
                         </li>
                         <li class="nav-item">

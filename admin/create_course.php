@@ -71,21 +71,12 @@ ob_start();
               <!-- Title -->
               <h4>Course details</h4>
 
-              <hr> <!-- Divider -->
-
               <!-- Basic information START -->
               <div class="row g-4">
                 <!-- Course title -->
                 <div class="col-12">
                   <label class="form-label">Course title</label>
                   <input name="title" class="form-control" type="text" placeholder="Enter course title" value="The Complete Digital Marketing Course - 12 Courses in 1" require>
-                </div>
-
-                <!-- Short description -->
-                <div class="col-12">
-                  <label class="form-label">Short description</label>
-                  <textarea name="short_desc" class="form-control" rows="4" placeholder="Enter keywords" require>Satisfied conveying a dependent contented he gentleman agreeable do be. Warrant private blushes removed an in equally totally if. Delivered dejection necessary objection do Mr prevailed. Mr feeling does chiefly cordial in do.
-										</textarea>
                 </div>
 
                 <!-- Course time -->
@@ -142,12 +133,6 @@ ob_start();
                   </div>
                 </div>
 
-                <!-- Course description -->
-                <div class="col-md-12">
-                  <label class="form-label">Add description</label>
-                  <textarea name="description" class="form-control" rows="5" placeholder="Enter course description..." require>Satisfied conveying a dependent contented he gentleman agreeable do be. Warrant private blushes removed an in equally totally if. Delivered dejection necessary objection do Mr prevailed. Mr feeling does chiefly cordial in do.
-                  </textarea>
-                </div>
 
                 <!-- Step 1 button -->
                 <div class="d-flex justify-content-end mt-3 col-md-12">
@@ -160,7 +145,6 @@ ob_start();
             <!-- Step 2 content START -->
             <div id="step-2" role="tabpanel" class="content fade" aria-labelledby="steppertrigger2">
               <h4>Course Media</h4>
-              <hr>
               <div class="row">
                 <!-- Upload image START -->
                 <div class="col-12">
@@ -201,7 +185,6 @@ ob_start();
             <!-- Step 3 content START -->
             <div id="step-3" role="tabpanel" class="content fade" aria-labelledby="steppertrigger3">
               <h4>Curriculum</h4>
-              <hr>
               <div class="row">
                 <!-- Add lecture Modal button -->
                 <div class="d-sm-flex justify-content-sm-between align-items-center mb-3">
@@ -213,7 +196,6 @@ ob_start();
                 <div class="accordion accordion-icon accordion-bg-light" id="lectureHolder"></div>
                 <div class="d-md-flex justify-content-between align-items-start mt-4">
                   <button type="button" class="btn btn-secondary prev-btn mb-2 mb-md-0">Previous</button>
-                  <button type="button" class="btn btn-light me-auto ms-md-2 mb-2 mb-md-0">Preview Course</button>
                   <div class="text-md-end">
                     <button class="btn btn-success mb-2 mb-sm-0">Submit a Course</button>
                     <p class="mb-0 small mt-1">Once you click "Submit a Course", your course will be uploaded and marked as pending for review.</p>
@@ -283,14 +265,6 @@ ob_start();
           <div class="col-md-12">
             <label class="form-label">Video link</label>
             <input class="form-control" name="url" type="text" placeholder="Enter Video link">
-          </div>
-          <div class="col-6 mt-3">
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-              <input type="radio" class="btn-check" name="price" value="free" id="option1">
-              <label class="btn btn-sm btn-light btn-primary-soft-check border-0 m-0" for="option1">Free</label>
-              <input type="radio" class="btn-check" name="price" value="premium" id="option2" checked>
-              <label class="btn btn-sm btn-light btn-primary-soft-check border-0 m-0" for="option2">Premium</label>
-            </div>
           </div>
         </form>
       </div>

@@ -32,9 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Validate password strength
-    if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/', $password)) {
-        $_SESSION['error_message'] = "Password must be at least 8 characters long and include at least one letter and one number.";
+    // Allow all special characters
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+        $_SESSION['error_message'] =
+            "Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one number.";
         header("Location: ../sign_up.php");
         exit();
     }

@@ -82,7 +82,7 @@ ob_start();
                 </div>
 
                 <!-- Short description -->
-                <div class="col-12">
+                <div class="col-12 d-none">
                   <label class="form-label">Short description</label>
                   <textarea name="short_desc" class="form-control" rows="4" placeholder="Enter keywords" require><?= $course['short_desc'] ?></textarea>
                 </div>
@@ -111,7 +111,7 @@ ob_start();
                 </div>
 
                 <!-- Course description -->
-                <div class="col-md-12">
+                <div class="col-md-12 d-none">
                   <label class="form-label">Add description</label>
                   <textarea name="description" class="form-control" rows="5" placeholder="Enter course description..." require><?= $course['description'] ?></textarea>
                 </div>

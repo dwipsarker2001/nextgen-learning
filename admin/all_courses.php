@@ -5,6 +5,7 @@ include('../includes/session.php');
 include('../includes/get_courses.php');
 include('../includes/get_totals.php');
 include('../includes/get_records.php');
+include('../includes/helpers.php');
 
 // Pagination variables
 $limit = 10; // Records per page
@@ -55,6 +56,7 @@ ob_start();
         <!-- Table body START -->
         <tbody>
           <?php foreach ($courses as $course): ?>
+            
             <tr>
               <!-- Table data -->
               <td>
@@ -74,18 +76,17 @@ ob_start();
               </td>
 
               <!-- Table data -->
-
-              <!-- Table data -->
               <td class="text-center">৳ <?= htmlspecialchars($course['price']) ?></td>
               <td class="text-center"> <?= total_enrolled($conn, $course['id']) ?></td>
               <td class="">
+                <?php if(isAuthor($course['instructor_id'])  || isUser('admin')): ?>
                 <div class="d-flex justify-content-end">
                   <a href="edit_course.php?id=<?= $course['id'] ?>" class="btn btn-sm btn-success-soft btn-round me-1 mb-1 mb-md-0"><i class="far fa-fw fa-edit"></i></a>
                   <button class="btn btn-sm btn-danger-soft btn-round mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteLecture">
                     <i class="fas fa-fw fa-times"></i>
                   </button>
                 </div>
-
+                <?php endif; ?>
               </td>
             </tr>
           <?php endforeach; ?>

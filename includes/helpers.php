@@ -72,10 +72,10 @@ function get_payment_records($user_id, $conn)
 // ---------------------------------------------
 function get_enrolled_course($conn, $user_id)
 {
-    $sql = "SELECT courses.* 
+    $sql = "SELECT enrollments.status as isEnrolled, courses.* 
             FROM enrollments 
             JOIN courses ON enrollments.course_id = courses.id 
-            WHERE enrollments.user_id = ? AND enrollments.status = 'success'";
+            WHERE enrollments.user_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -118,9 +118,15 @@ function is_active_page($page_name, $query_key = null, $query_value = null)
 // --------------------------------------------
 // Protect page for specific roles
 // ----------------------------------------
-function protected_for($required_role)
+function protected_for(string|array $roles)
 {
-    if (!isset($_SESSION['user_email']) || $_SESSION['user_role'] !== $required_role) {
+    // Convert single role to array
+    $allowed_roles = is_array($roles) ? $roles : [$roles];
+
+    if (
+        !isset($_SESSION['user_email']) ||
+        !in_array($_SESSION['user_role'], $allowed_roles, true)
+    ) {
         header('Location: ../sign_in.php');
         exit();
     }
@@ -133,4 +139,15 @@ function format_date($date)
 {
     $date_obj = new DateTime($date);
     return $date_obj->format('d M Y');
+}
+
+// ----------------------------------------------
+// Role checker function
+// ---------------------------------------------
+function isUser($role) {
+    return $_SESSION['user_role'] == $role;
+}
+
+function isAuthor($user_id) {   
+    return $_SESSION['user_id'] == $user_id;
 }

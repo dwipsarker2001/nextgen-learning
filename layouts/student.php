@@ -1,109 +1,200 @@
 <?php
-/*-----------------------------------------
-| Includes
-------------------------------------------*/
+// include essentials files
 include_once('../includes/db.php');
 include_once('../includes/session.php');
 include_once('../includes/helpers.php');
 include_once('../includes/get_user_by_id.php');
 
-/*-----------------------------------------
-| Protection
-------------------------------------------*/
+// protection
 protected_for('student');
 
-/*-----------------------------------------
-| User Data
-------------------------------------------*/
+// variables
 $user_id = $_SESSION['user_id'];
-$user    = get_user($conn, $user_id);
+$user = get_user($conn, $user_id);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title><?= $page_title ?? 'Student Dashboard | Digital Shikkhok'; ?></title>
 
-    <!-- Meta -->
+<head>
+    <title><?= $page_title ?></title>
+
+    <!-- Meta Tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Md. Sharif Ahmed">
-    <meta name="description" content="Digital Shikkhok - Online Learning Platform">
+    <meta name="description" content="Nextgen Learning - Online Learning Platform">
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/images/favicon.ico">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&amp;family=Roboto:wght@400;500;700&amp;display=swap">
 
-    <!-- Vendor CSS -->
-    <link rel="stylesheet" href="../assets/vendor/font-awesome/css/all.min.css">
-    <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/vendor/choices/css/choices.min.css">
-    <link rel="stylesheet" href="../assets/vendor/aos/aos.css">
+    
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/font-awesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/choices/css/choices.min.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/glightbox/css/glightbox.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/quill/css/quill.snow.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/stepper/css/bs-stepper.min.css">
+    <link rel="stylesheet" type="text/css" href="../assets/vendor/overlay-scrollbar/css/overlayscrollbars.min.css">
 
     <!-- Theme CSS -->
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
     <style>
-        body, h1, h2, h3, h4, h5, h6, span, p {
-            font-family: "Inter", sans-serif;
-        }
+    /* Prevent navbar height from changing */
+    .navbar .dropdown-menu {
+        position: absolute !important;
+        top: 100%;
+        right: 0;
+        left: auto;
+        margin-top: 0.5rem;
+    }
+
+    /* Ensure navbar doesn't expand */
+    .navbar {
+        overflow: visible !important;
+    }
     </style>
 </head>
 
 <body>
 
+    <!-- ------------------------------------------------ -->
+    <!--          Navbar Start                            -->
+    <!-- ------------------------------------------------ -->
+    <nav class="navbar top-bar border-bottom shadow-none py-0 py-xl-3" style="background:#24292d;">
+        <div class="container p-0">
+            <div class="d-flex align-items-center w-100">
+                <!-- Mobile Logo -->
+                <div class="d-flex align-items-center d-xl-none">
+                    <a class="navbar-brand" href="../student/dashboard.php">
+                        <img class="navbar-brand-item h-30px" src="../assets/images/logo-mobile.svg">
+                    </a>
+                </div>
 
-<!-- --------------------------
-        Page Banner
---------------------------- -->
-<section class="pt-0">
-    <div class="container-fluid px-0">
-        <div class="card bg-blue h-200px rounded-0"></div>
-    </div>
+                <!-- Sidebar Toggle -->
+                <div class="navbar-expand-xl sidebar-offcanvas-menu">
+                    <button class="navbar-toggler me-auto" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasSidebar">
+                        <i class="bi bi-text-right fa-fw h2 lh-0 mb-0"></i>
+                    </button>
+                </div>
 
-    <div class="container mt-n4">
-        <div class="card bg-transparent border-0">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="avatar avatar-xxl">
-                        <img class="avatar-img rounded-circle"
-                             src="../uploads/img/users/<?= $user['avatar'] ?: 'blank.png'; ?>">
-                    </div>
+                <!--  Student Panel Title -->
+                <div class="ms-3 d-none d-xl-block">
+                    <a href="../student/dashboard.php"><img class="navbar-logo" src="../assets/images/logo.png" alt="logo"></a>
                 </div>
-                <div class="col">
-                    <h1 class="fs-4 mb-1"><?= $user['first_name'].' '.$user['last_name']; ?></h1>
-                    <p class="mb-0"><i class="fas fa-phone me-1"></i><?= $user['phone']; ?></p>
+
+                <!-- Right Side -->
+                <div class="ms-auto">
+                    <ul class="navbar-nav flex-row align-items-center">
+
+                        <li class="nav-item dropdown">
+
+                            <!-- Proper Trigger -->
+                            <a class="d-flex align-items-center text-white text-decoration-none"
+                            href="#"
+                            id="profileDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                                <span class="me-2 fw-bold">
+                                    <?= $user['first_name'] ?> <?= $user['last_name'] ?>
+                                </span>
+
+                                <?php if ($user['avatar']) { ?>
+                                    <img class="rounded-circle"
+                                        src="../uploads/img/users/<?php echo $user['avatar']; ?>"
+                                        width="35" height="35">
+                                <?php } else { ?>
+                                    <img class="rounded-circle"
+                                        src="../assets/images/avatar/empty-profile.png"
+                                        width="35" height="35">
+                                <?php } ?>
+
+                            </a>
+
+                            <!-- Dropdown Menu -->
+                            <ul class="dropdown-menu dropdown-menu-end shadow pt-3"
+                                aria-labelledby="profileDropdown">
+
+                                <li class="px-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar me-3">
+                                            <?php if ($user['avatar']) { ?>
+                                                <img class="rounded-circle"
+                                                    src="../uploads/img/users/<?php echo $user['avatar']; ?>"
+                                                    width="40">
+                                            <?php } else { ?>
+                                                <img class="rounded-circle"
+                                                    src="../assets/images/avatar/empty-profile.png"
+                                                    width="40">
+                                            <?php } ?>
+                                        </div>
+
+                                        <div>
+                                            <a class="h6" href="profile.php">
+                                                <?= $user['first_name'] ?>
+                                                <?= $user['last_name'] ?>
+                                            </a>
+                                            <p class="small m-0"><?= $user['email'] ?></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="student_edit_profile.php">
+                                        <i class="bi bi-gear me-2"></i>
+                                        Account Settings
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item bg-danger-soft-hover"
+                                    href="../includes/logout.php">
+                                        <i class="bi bi-power me-2"></i>
+                                        Sign Out
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                    </ul>
                 </div>
-                <div class="col-auto">
-                    <a href="student_edit_profile.php" class="btn btn-outline-primary">Manage Profile</a>
-                    <a href="student_edit_profile.php" class="btn btn-outline-primary">Visit Website</a>
-                    <a href="student_edit_profile.php" class="btn btn-outline-primary">Logout</a>
-                </div>
+
+
             </div>
-        </div>  
-    </div>
-</section>
-
-<!---------------------------------------------
-    Main Content
------------------------------------ -->
-<main class="py-4">
-    <div class="container">
-        <div class="row">
-            <?= $content; ?>
         </div>
-    </div>
-</main>
 
+    </nav>
 
-<!-- JS -->
-<script src="../assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../assets/vendor/choices/js/choices.min.js"></script>
-<script src="../assets/vendor/aos/aos.js"></script>
-<script src="../assets/js/functions.js"></script>
+    <main>
+        <?php echo $content; ?>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Vendors -->
+    <script src="../assets/vendor/purecounterjs/dist/purecounter_vanilla.js"></script>
+    <script src="../assets/vendor/choices/js/choices.min.js"></script>
+    <script src="../assets/vendor/glightbox/js/glightbox.js"></script>
+    <script src="../https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <script src="../assets/vendor/stepper/js/bs-stepper.min.js"></script>
+    <script src="../assets/vendor/overlay-scrollbar/js/overlayscrollbars.min.js"></script>
+
+    <!-- Template Functions -->
+    <script src="../assets/js/functions.js"></script>
 
 </body>
+
 </html>

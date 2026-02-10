@@ -5,7 +5,7 @@ require_once "db.php";
 require_once "helpers.php";
 
 // Restrict access
-protected_for('admin');
+protected_for(['admin', 'instructor']);
 
 // Check if `id` is set in the POST request
 if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {

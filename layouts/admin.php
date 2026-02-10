@@ -6,7 +6,7 @@ include_once('../includes/helpers.php');
 include_once('../includes/get_user_by_id.php');
 
 // protection
-protected_for('admin');
+protected_for(['admin', 'instructor']);
 
 // variables
 $user_id = $_SESSION['user_id'];
@@ -57,7 +57,8 @@ $user = get_user($conn, $user_id);
 
             <!-- Navbar brand for xl START -->
             <div class="d-flex align-items-center">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="../admin/dashboard.php">
+                <?php $home_url = isUser('admin') ? '../admin/dashboard.php' : '../admin/all_courses.php' ?>
+                <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $home_url ?>">
                     <img class="navbar-brand-item" src="../assets/images/logo.png" alt="">
                 </a>
             </div>
@@ -69,10 +70,12 @@ $user = get_user($conn, $user_id);
                     <!-- Sidebar menu START -->
                     <ul class="navbar-nav flex-column" id="navbar-sidebar">
 
+                        <?php if(isUser('admin')): ?>
                         <!-- Dashboard menu item -->
                         <li class="nav-item"><a href="dashboard.php" class="nav-link <?= is_active_page('dashboard.php') ?>">
                             <i class="bi bi-house fa-fw me-2"></i>Dashboard</a>
                         </li>
+                        <?php endif; ?>
 
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapsepage" role="button" aria-expanded="false" aria-controls="collapsepage">
@@ -87,12 +90,14 @@ $user = get_user($conn, $user_id);
                                 </li>
                             </ul>
                         </li>
+                        <?php if(isUser('admin')): ?>
                         <li class="nav-item">
                             <a href="enrollments.php" class="nav-link <?= is_active_page('enrollments.php') ?>">
                                 <i class="far fa-chart-bar fa-fw me-2"></i>
                                 Enrollments
                             </a>
                         </li>
+                         <?php endif; ?>
                         <li class="nav-item">
                             <a href="all_students.php" class="nav-link <?= is_active_page('all_students.php') ?>">
                                 <i class="fas fa-user-tie fa-fw me-2"></i>
@@ -108,7 +113,7 @@ $user = get_user($conn, $user_id);
                         <li class="nav-item">
                             <a class="nav-link <?= is_active_page('profile.php') ?>" href="profile.php">
                                 <i class="fas fa-user-cog fa-fw me-2"></i>
-                                Admin Settings
+                                Account
                             </a>
                         </li>
                     </ul>

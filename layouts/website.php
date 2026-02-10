@@ -94,13 +94,29 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                                             <img class="avatar-img rounded-circle" src="uploads/img/users/<?= $user['avatar'] ?: 'blank.png'; ?>" alt="avatar">
                                         </div>
                                         <div>
-                                            <a class="h6" href="student/student_dashboard.php"><?= $user['first_name'] ?> <?= $user['last_name'] ?></a>
+                                            <?php
+                                                switch ($_SESSION['user_role']) {
+                                                    case 'student':
+                                                        $dashboard_link= 'student/dashboard.php';
+                                                        break;
+                                                    case 'instructor':
+                                                        $dashboard_link = 'admin/all_courses.php';
+                                                        break;
+                                                    case 'admin':
+                                                    default:
+                                                        $dashboard_link = 'admin/dashboard.php';
+                                                        break;
+                                                }
+                                            ?>
+                                            <a class="h6" href="<?= $dashboard_link ?>">
+                                                <?= $user['first_name'] ?> <?= $user['last_name'] ?>
+                                            </a>
                                             <p class="small m-0"><?= $user['email'] ?></p>
                                         </div>
                                     </div>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="student/student_edit_profile.php"><i class="bi bi-person fa-fw me-2"></i>Edit Profile</a></li>
+                                <li><a class="dropdown-item" href="<?= $dashboard_link ?>"><i class="bi bi-person fa-fw me-2"></i>Admin Panel</a></li>
                                 <li><a class="dropdown-item bg-danger-soft-hover" href="includes/logout.php"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
                             </ul>
                         </div>

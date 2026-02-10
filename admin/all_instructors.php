@@ -15,7 +15,7 @@ $offset = ($page - 1) * $limit;
 
 // Conditions
 $phone_condition = isset($_GET['phone']) ? " AND phone LIKE '%" . $_GET['phone'] . "%'" : '';
-$conditions = "role = 'instructor' or role = 'admin'" . $phone_condition;
+$conditions = "role = 'instructor'" . $phone_condition;
 
 // query parameters
 $query_params = [
@@ -68,7 +68,9 @@ ob_start();
             <th scope="col" class="border-0">Join date</th>
             <th scope="col" class="border-0">Email</th>
             <th scope="col" class="border-0">Phone</th>
+            <?php if(isUser('admin')): ?>
             <th scope="col" class="border-0 rounded-end text-end">Actions</th>
+            <?php endif; ?>
           </tr>
         </thead>
 
@@ -108,53 +110,33 @@ ob_start();
               <td><?= $user['phone'] ?></td>
 
               <!-- Table data -->
+              <?php if(isUser("admin")): ?>
               <td class="text-end">
-                <span class="dropdown text-end">
-                  <a
-                    href="#"
-                    class="btn btn-light btn-round me-1 mb-1 mb-md-0"
-                    role="button"
-                    id="dropdownShare2"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-three-dots fa-fw"></i>
-                  </a>
-                  <!-- dropdown button -->
-                  <ul
-                    class="dropdown-menu dropdown-w-sm dropdown-menu-s min-w-auto shadow rounded"
-                    aria-labelledby="dropdownShare2">
-                    <li>
-                      <form method="POST" action="../includes/process_update_role.php">
-                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                        <input type="hidden" name="role" value="student">
-                        <button class="dropdown-item" type="submit">
-                          <i class="fas fa-angle-double-down me-2"></i>
-                          Demote to Student</a>
-                        </button>
-                      </form>
-                    </li>
-                    <li>
-                      <form method="POST" action="../includes/process_delete_user.php">
-                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                        <input type="hidden" name="table" value="users">
-                        <input type="hidden" name="page" value="instructor">
-                        <button class="dropdown-item" type="submit">
-                          <i class="bi bi-trash fa-fw me-2"></i>
-                          Delete this account</a>
-                        </button>
-                      </form>
-                    </li>
 
+                <!-- Demote Button -->
+                <form method="POST" action="../includes/process_update_role.php" class="d-inline">
+                  <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                  <input type="hidden" name="role" value="student">
+                  <button class="btn btn-warning btn-sm me-1" type="submit">
+                    <i class="fas fa-angle-double-down me-1"></i>
+                    Demote
+                  </button>
+                </form>
 
-                  </ul>
-                </span>
-                <a href="mailto:<?= $user['email'] ?>" class="btn btn-light btn-round me-1 mb-1 mb-md-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Message">
-                  <i class="bi bi-envelope"></i>
-                </a>
-                <a href="../coming_soon.php" class="btn btn-light btn-round me-1 mb-1 mb-md-0" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
-                  <i class="bi bi-eye"></i>
-                </a>
+                <!-- Delete Button -->
+                <form method="POST" action="../includes/process_delete_user.php" class="d-inline">
+                  <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                  <input type="hidden" name="table" value="users">
+                  <input type="hidden" name="page" value="instructor">
+                  <button class="btn btn-danger btn-sm"
+                    onclick="return confirm('Are you sure you want to delete this account?');"
+                    type="submit">
+                    <i class="bi bi-trash me-1"></i>
+                    Delete
+                  </button>
+                </form>
               </td>
+              <?php endif; ?>
             </tr>
           <?php endforeach; ?>
         </tbody>

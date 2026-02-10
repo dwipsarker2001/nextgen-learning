@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_role'] = 'student';
         $stmt->close();
         $conn->close();
-        header("Location: ../student/student_dashboard.php");
+        header("Location: ../student/dashboard.php");
         exit();
     } else {
         $_SESSION['error_message'] = "Registration failed. Please try again.";

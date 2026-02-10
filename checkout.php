@@ -3,7 +3,14 @@ session_start();
 include('includes/db.php');
 include('includes/get_course_by_id.php');
 
+// protection
 $course = get_course($conn, $_GET['id']);
+if (in_array($_SESSION['user_role'], ['instructor', 'admin'])) {
+    $_SESSION['error_message'] = "Oops! It looks like you're logged in as an instructor/admin. Course purchases are available for students only.";
+    header("Location: course_details.php?id=" . $_GET['id']);
+    exit();
+}
+
 $pageTitle = "Checkout | Nextgen Learning";
 ob_start();
 ?>

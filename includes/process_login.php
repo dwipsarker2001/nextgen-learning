@@ -32,7 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['success_message'] = "Welcome " . $user['first_name'] . ". Your login was successful!";
 
         // Redirect based on role
-        $redirect_page = ($user['role'] === 'student') ? '../student/student_dashboard.php' : '../admin/dashboard.php';
+        switch ($user['role']) {
+            case 'student':
+                $redirect_page = '../student/dashboard.php';
+                break;
+            case 'instructor':
+                $redirect_page = '../admin/all_courses.php';
+                break;
+            case 'admin':
+            default:
+                $redirect_page = '../admin/dashboard.php';
+                break;
+        }
         header("Location: $redirect_page");
         exit();
     } 

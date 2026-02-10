@@ -107,6 +107,34 @@ ob_start();
         <div data-sticky data-margin-top="80" data-sticky-for="768">
           <div class="row g-4">
             <div class="col-md-6 col-xl-12">
+              <!-- ----------------------------------- -->
+              <!--         Alert Dialog                -->
+              <!-- ----------------------------------- -->
+              <?php
+              // Display session alert messages
+              if (!empty($_SESSION['error_message']) || !empty($_SESSION['success_message'])) {
+
+                  // Determine alert type and message
+                  $isError = !empty($_SESSION['error_message']);
+                  $alertType = $isError ? 'warning' : 'success';
+                  $alertLabel = $isError ? 'Error:' : 'Success:';
+                  $message = $isError ? $_SESSION['error_message'] : $_SESSION['success_message'];
+                  ?>
+
+                  <div class="alert alert-<?= $alertType ?> alert-dismissible fade show" role="alert">
+                      <strong><?= $alertLabel ?></strong> <?= htmlspecialchars($message) ?>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+
+              <?php
+                  // Clear the displayed message
+                  if ($isError) {
+                      unset($_SESSION['error_message']);
+                  } else {
+                      unset($_SESSION['success_message']);
+                  }
+              }
+              ?>
               <div class="card card-body border p-4">
 
                 <!-- Price & Buy Button -->

@@ -1,19 +1,25 @@
 <?php
-session_start(); // Start the session
+session_start();
 include '../includes/db.php';
 include '../includes/auth.php';
 include_once '../includes/helpers.php';
 
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   try {
+    // Define absolute path for uploads
+    $upload_path = __DIR__ . "/../uploads/img/thumbnails/";
+    
+    // Ensure directory exists and is writable
+    if (!is_dir($upload_path)) {
+        mkdir($upload_path, 0755, true);
+    }
+    
     // Map form fields to database columns
     $fields = [
       'title' => $_POST['title'] ?? '',
-      'short_desc' =>  '',
-      'description' => '',
-      'thumbnail' => upload_image("../uploads/img/thumbnails/", "thumbnail"),
+      'short_desc' => $_POST['short_desc'] ?? '',
+      'description' => $_POST['description'] ?? '',
+      'thumbnail' => upload_image($upload_path, "thumbnail"),
       'video' => $_POST['video'] ?? '',
       'duration' => $_POST['duration'] ?? '',
       'price' => $_POST['price'] ?? '',
@@ -23,8 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'upcoming' => !empty($_POST['upcoming']) ? 'upcoming' : 'live',
     ];
 
-  
-
     // Generate the placeholders and values dynamically
     $columns = implode(', ', array_keys($fields));
     $placeholders = implode(', ', array_fill(0, count($fields), '?'));
@@ -33,8 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Prepare SQL for inserting the course
     $course_sql = "INSERT INTO `courses` ($columns) VALUES ($placeholders)";
     if ($stmt = $conn->prepare($course_sql)) {
-      // Generate parameter types string
-      // Assuming all fields are strings
       $types = str_repeat('s', count($fields));
       $stmt->bind_param($types, ...$values);
 
@@ -61,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   $topic_duration = $topic['duration'] ?? '';
                   $topic_price = $topic['price'] ?? '';
 
-                  // Insert topic
                   $topic_sql = "INSERT INTO `topics` (`lecture_id`,`course_id`, `title`, `video`, `duration`, `price`) VALUES (?, ?, ?, ?, ?, ?)";
                   if ($topicStmt = $conn->prepare($topic_sql)) {
                     $topicStmt->bind_param("isssss", $lecture_db_id, $course_id, $topic_title, $video_url, $topic_duration, $topic_price);

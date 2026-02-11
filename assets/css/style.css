@@ -23897,3 +23897,26 @@ html[dir="rtl"] .choices__input {
   height: 35px;
   width: 35px;
 }
+
+/* Global text color */
+body,
+p,
+span,
+li,
+ul,
+ol,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+small,
+label,
+strong,
+em,
+div {
+    color: #4d4d4d;
+}
+
+

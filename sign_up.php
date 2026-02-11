@@ -19,7 +19,7 @@ ob_start();
             <!---------------------------------------------
                         Left Side: Welcome Info
             --------------------------------------------->
-            <div class="col-12 col-lg-6 d-md-flex align-items-center justify-content-center bg-primary bg-opacity-10">
+            <div class="col-12 col-lg-6 d-md-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="padding: 100px 0;">
                 <div class="p-3 p-lg-5">
                     <!-- Title and subtitle -->
                     <div class="text-center">

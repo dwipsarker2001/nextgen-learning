@@ -104,7 +104,7 @@ $user = get_user($conn, $user_id);
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
 
-                                <span class="me-2 fw-bold">
+                                <span class="me-2 fw-bold text-white">
                                     <?= $user['first_name'] ?> <?= $user['last_name'] ?>
                                 </span>
 
@@ -176,6 +176,31 @@ $user = get_user($conn, $user_id);
         </div>
 
     </nav>
+    <!-- ----------------------------------- -->
+    <!--         Alert Dialog                -->
+    <!-- ----------------------------------- -->
+    <?php
+    // Display session alert messages
+    if (!empty($_SESSION['error_message']) || !empty($_SESSION['success_message'])) {
+        // Determine alert type and message
+        $isError = !empty($_SESSION['error_message']);
+        $alertType = $isError ? 'warning' : 'success';
+        $alertLabel = $isError ? 'Error:' : 'Success:';
+        $message = $isError ? $_SESSION['error_message'] : $_SESSION['success_message'];
+        ?>
+        <div class="alert alert-<?= $alertType ?> alert-dismissible fade show" role="alert">
+            <strong><?= $alertLabel ?></strong> <?= htmlspecialchars($message) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php
+        // Clear the displayed message
+        if ($isError) {
+            unset($_SESSION['error_message']);
+        } else {
+            unset($_SESSION['success_message']);
+        }
+    }
+    ?>
 
     <main>
         <?php echo $content; ?>

@@ -53,10 +53,10 @@ ob_start();
     <div class="row">
       <div class="col-12">
         <!-- Banner card -->
-        <div class="bg-light p-4 text-center rounded-3">
+        <div class="card card-body bg-blue p-4 h-100 p-4 text-center rounded-3">
 
           <!-- Page Title -->
-          <h2 class="m-0">
+          <h2 class="m-0 text-white">
             Explore <?= $type_labels[$type] ?? 'Courses' ?>
           </h2>
 
@@ -65,9 +65,9 @@ ob_start();
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb breadcrumb-dots mb-0">
                 <li class="breadcrumb-item">
-                  <a href="index.php">Home</a>
+                  <a href="index.php" class="text-white">Home</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">
+                <li class="breadcrumb-item active text-white  opacity-75" aria-current="page">
                   <?= $type_labels[$type] ?? 'Our Courses' ?>
                 </li>
               </ol>

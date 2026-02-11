@@ -53,11 +53,11 @@ ob_start();
 
 			<!-- Feature item -->
 			<div class="col-sm-6 col-lg-4">
-				<div class="card card-body bg-light p-4 h-100">
+				<div class="card card-body p-4 h-100" style="background: #1d8ee4;">
 					<!-- Svg icon -->
 					<figure>
 						<svg class="fill-orange" width="54.22px" height="58.19px" viewBox="0 0 54.22 58.19" style="enable-background:new 0 0 54.22 58.19;">
-							<path d="M27.11,9.75c-2.32,0-4.21-1.89-4.21-4.21c0-2.32,1.89-4.21,4.21-4.21c2.32,0,4.21,1.89,4.21,4.21 C31.32,7.86,29.43,9.75,27.11,9.75z M27.11,3.05c-1.37,0-2.49,1.12-2.49,2.49s1.12,2.49,2.49,2.49s2.49-1.12,2.49-2.49 S28.48,3.05,27.11,3.05z"/>
+							<path d="M27.11,9.75c-2.32,0-4.21-1.89-4.21-	4.21c0-2.32,1.89-4.21,4.21-4.21c2.32,0,4.21,1.89,4.21,4.21 C31.32,7.86,29.43,9.75,27.11,9.75z M27.11,3.05c-1.37,0-2.49,1.12-2.49,2.49s1.12,2.49,2.49,2.49s2.49-1.12,2.49-2.49 S28.48,3.05,27.11,3.05z"/>
 							<path d="M31.61,27.21H22.6c-0.48,0-0.86-0.39-0.86-0.86c0-0.48,0.39-0.86,0.86-0.86h9.01c0.48,0,0.86,0.39,0.86,0.86 C32.48,26.82,32.09,27.21,31.61,27.21z"/>
 							<path d="M22.31,27.21c-1.51,0-1.68-0.03-1.75-0.05c-1.14-0.22-1.96-1.25-1.96-2.45v-8.63c0-2.79,2.09-5.14,4.87-5.46 c0.85-0.1,2.08-0.14,3.66-0.12c1.55-0.02,2.79,0.02,3.64,0.12c2.78,0.32,4.87,2.66,4.87,5.46v8.63c0,1.2-0.83,2.23-1.96,2.45 c-0.08,0.02-0.26,0.05-2.05,0.05c-0.48,0-0.86-0.39-0.86-0.86v-8.72c0-0.48,0.39-0.86,0.86-0.86c0.48,0,0.86,0.39,0.86,0.86v7.86 c0.44,0,0.81-0.01,0.91-0.02c0.28-0.05,0.52-0.38,0.52-0.75v-8.63c0-1.92-1.44-3.53-3.34-3.75c-0.78-0.09-1.94-0.13-3.44-0.11 c-1.52-0.02-2.68,0.02-3.46,0.11c-1.9,0.22-3.34,1.83-3.34,3.75v8.63c0,0.37,0.24,0.7,0.56,0.76c0.07,0.01,0.43,0.01,0.86,0.01 v-7.86c0-0.48,0.39-0.86,0.86-0.86c0.48,0,0.86,0.39,0.86,0.86v8.72c0,0.48-0.38,0.86-0.86,0.86C22.5,27.21,22.4,27.21,22.31,27.21 z"/>
 							<path d="M13.31,56.75c-0.48,0-0.86-0.39-0.86-0.86v-4.11c0-0.48,0.39-0.86,0.86-0.86s0.86,0.39,0.86,0.86v4.11 C14.17,56.37,13.79,56.75,13.31,56.75z"/>
@@ -77,14 +77,14 @@ ob_start();
 							<path d="M52.15,56.75H37.27c-0.48,0-0.86-0.39-0.86-0.86v-6.5c0-2.73,2.04-5.02,4.75-5.33c0.47-0.06,0.9,0.28,0.95,0.76 s-0.29,0.9-0.76,0.95c-1.84,0.21-3.23,1.77-3.23,3.62v5.63h13.15V49.4c0-1.85-1.39-3.41-3.23-3.62c-0.47-0.05-0.81-0.48-0.76-0.95 c0.05-0.47,0.49-0.81,0.95-0.76c2.71,0.31,4.75,2.6,4.75,5.33v6.5C53.01,56.37,52.63,56.75,52.15,56.75z"/>
 						</svg>
 					</figure>
-					<h5>Expert Instructors</h5>
-					<p class="mb-0">Learn from Bangladesh's top educators who bring local context and global expertise to every course.</p>
+					<h5 class='text-white'>Expert Instructors</h5>
+					<p class="mb-0 text-white">Learn from Bangladesh's top educators who bring local context and global expertise to every course.</p>
 				</div>
 			</div>
 
 			<!-- Feature item -->
 			<div class="col-sm-6 col-lg-4">
-				<div class="card card-body bg-light p-4 h-100">
+				<div class="card card-body p-4 h-100" style="background: #ff8036;">
 						<!-- Svg image decoration -->
 						<figure>
 							<svg class="fill-warning" width="60.77px" height="52.15px" viewBox="0 0 60.77 52.15" style="enable-background:new 0 0 60.77 52.15;">
@@ -105,14 +105,14 @@ ob_start();
 								<path d="M41.74,24.62h-6.47c-0.47,0-0.84-0.38-0.84-0.84c0-0.47,0.38-0.84,0.84-0.84h6.47c0.47,0,0.84,0.38,0.84,0.84 C42.58,24.24,42.2,24.62,41.74,24.62z"/>
 							</svg>
 						</figure>
-					<h5>Diverse Course Library</h5>
-					<p class="mb-0">Access courses in STEM, Arts, and Humanities - from academic subjects to professional skill development.</p>
+					<h5 class="text-white">Diverse Course Library</h5>
+					<p class="mb-0 text-white">Access courses in STEM, Arts, and Humanities - from academic subjects to professional skill development.</p>
 				</div>
 			</div>
 
 			<!-- Feature item -->
 			<div class="col-sm-6 col-lg-4">
-				<div class="card card-body bg-light p-4 h-100">
+				<div class="card card-body p-4 h-100" style="background: #1cce96;">
 						<!-- Svg image decoration -->
 						<figure>
 							<svg class="fill-success" width="55.44px" height="52.15px" viewBox="0 0 55.44 52.15" style="enable-background:new 0 0 55.44 52.15;">
@@ -124,8 +124,8 @@ ob_start();
 								<path d="M27.59,52.15c-14.19,0-25.73-11.54-25.73-25.73c0-14.19,11.54-25.73,25.73-25.73c0.48,0,0.86,0.39,0.86,0.86 c0,0.48-0.39,0.86-0.86,0.86c-13.24,0-24,10.77-24,24c0,13.24,10.77,24,24,24s24-10.77,24-24c0-0.48,0.39-0.86,0.86-0.86 c0.48,0,0.86,0.39,0.86,0.86C53.32,40.61,41.78,52.15,27.59,52.15z"/>
 							</svg>
 						</figure>
-					<h5>Affordable Pricing</h5>
-					<p class="mb-0">Quality education at prices that work for Bangladeshi students, with free trial courses available.</p>
+					<h5 class="text-white">Affordable Pricing</h5>
+					<p class="mb-0 text-white">Quality education at prices that work for Bangladeshi students, with free trial courses available.</p>
 				</div>
 			</div>
 

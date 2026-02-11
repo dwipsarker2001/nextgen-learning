@@ -23,16 +23,16 @@ ob_start();
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <div class="bg-light p-4 text-center rounded-3">
-          <h1 class="m-0">Checkout</h1>
+        <div class="bg-blue p-4 text-center rounded-3">
+          <h1 class="m-0 text-white">Checkout</h1>
 
           <!-- Breadcrumb -->
           <div class="d-flex justify-content-center">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb breadcrumb-dots mb-0">
-                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                <li class="breadcrumb-item"><a href="our_courses.php">Courses</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                <li class="breadcrumb-item text-white"><a href="index.php" class="text-white">Home</a></li>
+                <li class="breadcrumb-item text-white"><a href="our_courses.php" class="text-white">Courses</a></li>
+                <li class="breadcrumb-item active" aria-current="page" class="text-white">Checkout</li>
               </ol>
             </nav>
           </div>

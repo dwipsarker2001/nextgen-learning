@@ -35,7 +35,7 @@ ob_start();
                 <?php unset($_SESSION['error_message'], $_SESSION['error_type']); ?>
             <?php endif; ?>
 
-            <form class="row g-4 align-items-top" action="../includes/update_student.php" method="POST" enctype="multipart/form-data">
+            <form class="row g-4 align-items-top" action="../includes/process_update_student_profile.php" method="POST" enctype="multipart/form-data">
 
                 <div class="col-12 d-sm-flex justify-content-between align-items-center">
                     <h4 class="mb-sm-0">Student Profile</h4>

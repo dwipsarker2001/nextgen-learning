@@ -26,7 +26,7 @@ ob_start();
           <!-- Course Title -->
           <div class="col-12">
             <h2><?= $course['title'] ?></h2>
-            <p><?= $course['short_desc'] ?></p>
+            <p class='d-none'><?= $course['short_desc'] ?></p>
           </div>
 
           <!-- Video START -->
@@ -48,7 +48,7 @@ ob_start();
           <!---------------------------------------------
                 ABOUT COURSE START
           --------------------------------------------->
-          <div class="col-12">
+          <div class="col-12 d-none">
             <div class="card border">
               <div class="card-header border-bottom">
                 <h3 class="mb-0">Course description</h3>

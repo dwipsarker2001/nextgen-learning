@@ -144,7 +144,7 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
     <!---------------------------------------------
                 FOOTER START
     --------------------------------------------->
-    <footer class="pt-5">
+    <footer class="pt-5 bg-blue text-white">
         <div class="container">
             <div class="row g-4">
                 <!-- Widget 1: Logo & About -->
@@ -153,7 +153,7 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                         <img class="light-mode-item h-60px" src="assets/images/logo.png" alt="logo">
                         <img class="dark-mode-item h-40px" src="assets/images/logo-light.svg" alt="logo">
                     </a>
-                    <p class="my-3">NextGen Learning empowers students with affordable, interactive courses, connecting learners and teachers through modern, accessible digital education.</p>
+                    <p class="my-3 text-white">NextGen Learning empowers students with affordable, interactive courses, connecting learners and teachers through modern, accessible digital education.</p>
                     <ul class="list-inline mb-0 mt-3">
                         <li class="list-inline-item"><a class="btn btn-white btn-sm shadow px-2 text-facebook" href="#"><i class="fab fa-fw fa-facebook-f"></i></a></li>
                         <li class="list-inline-item"><a class="btn btn-white btn-sm shadow px-2 text-instagram" href="#"><i class="fab fa-fw fa-instagram"></i></a></li>
@@ -166,30 +166,30 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                 <div class="col-lg-6">
                     <div class="row g-4">
                         <div class="col-6 col-md-4">
-                            <h5 class="mb-2 mb-md-4">Company</h5>
+                            <h5 class="mb-2 mb-md-4 text-white">Company</h5>
                             <ul class="nav flex-column">
-                                <li class="nav-item"><a class="nav-link" href="about_us.php">About Us</a></li>
-                                <li class="nav-item"><a class="nav-link" href="contact_us.php">Contact Us</a></li>
-                                <li class="nav-item"><a class="nav-link" href="coming_soon.php">News &amp; Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="coming_soon.php">Library</a></li>
-                                <li class="nav-item"><a class="nav-link" href="">Careers</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="about_us.php">About Us</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="contact_us.php">Contact Us</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">News &amp; Blog</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">Library</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="">Careers</a></li>
                             </ul>
                         </div>
                         <div class="col-6 col-md-4">
-                            <h5 class="mb-2 mb-md-4">Community</h5>
+                            <h5 class="mb-2 mb-md-4 text-white">Community</h5>
                             <ul class="nav flex-column">
-                                <li class="nav-item"><a class="nav-link" href="http://facebook.com/">Facebook</a></li>
-                                <li class="nav-item"><a class="nav-link" href="https://web.whatsapp.com/">WhatsApp</a></li>
-                                <li class="nav-item"><a class="nav-link" href="https://www.instagram.com/">Instagram</a></li>
-                                <li class="nav-item"><a class="nav-link" href="http://youtube.com/">YouTube</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="http://facebook.com/">Facebook</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="https://web.whatsapp.com/">WhatsApp</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="https://www.instagram.com/">Instagram</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="http://youtube.com/">YouTube</a></li>
                             </ul>
                         </div>
                         <div class="col-6 col-md-4">
-                            <h5 class="mb-2 mb-md-4">Teaching</h5>
+                            <h5 class="mb-2 mb-md-4 text-white">Teaching</h5>
                             <ul class="nav flex-column">
-                                <li class="nav-item"><a class="nav-link" href="coming_soon.php">Become an Instructor</a></li>
-                                <li class="nav-item"><a class="nav-link" href="coming_soon.php">How to Guide</a></li>
-                                <li class="nav-item"><a class="nav-link" href="coming_soon.php">Terms &amp; Privacy Policy</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">Become an Instructor</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">How to Guide</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">Terms &amp; Privacy Policy</a></li>
                             </ul>
                         </div>
                     </div>
@@ -197,11 +197,11 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
 
                 <!-- Widget 3: Contact Info -->
                 <div class="col-lg-3">
-                    <h5 class="mb-2 mb-md-4">Contact Us</h5>
-                    <p class="mb-2">Phone Number: <span class="h6 fw-light ms-2">+880 131-649264</span>
-                        <span class="d-block small">(9:30 AM to 8:30 BST)</span>
+                    <h5 class="mb-2 mb-md-4 text-white">Contact Us</h5>
+                    <p class="mb-2 text-white">Phone Number: <span class="h6 fw-light ms-2 text-white">+880 131-649264</span>
+                        <span class="d-block small text-white">(9:30 AM to 8:30 BST)</span>
                     </p>
-                    <p class="mb-0">Email: <span class="h6 fw-light ms-2">admission@nextgen.com</span></p>
+                    <p class="mb-0 text-white">Email: <span class="h6 fw-light ms-2 text-white">admission@nextgen.com</span></p>
                 </div>
             </div>
 
@@ -210,11 +210,13 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
             <!-- Bottom Footer -->
             <div class="py-3">
                 <div class="d-lg-flex justify-content-between align-items-center py-3 text-center text-md-left">
-                    <div class="text-body text-primary-hover">Copyright © 2026 NextGen Learning. All rights reserved.</div>
+                   <div class=" text-primary-hover" style="color: white;">
+                        Copyright © 2026 NextGen Learning. All rights reserved.
+                    </div>
                     <div class="justify-content-center mt-3 mt-lg-0">
                         <ul class="nav list-inline justify-content-center mb-0">
-                            <li class="list-inline-item"><a class="nav-link" href="coming_soon.php">Terms of Use</a></li>
-                            <li class="list-inline-item"><a class="nav-link pe-0" href="coming_soon.php">Privacy Policy</a></li>
+                            <li class="list-inline-item"><a class="nav-link text-white" href="coming_soon.php">Terms of Use</a></li>
+                            <li class="list-inline-item"><a class="nav-link pe-0 text-white" href="coming_soon.php">Privacy Policy</a></li>
                         </ul>
                     </div>
                 </div>

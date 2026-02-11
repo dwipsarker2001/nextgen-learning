@@ -11,7 +11,6 @@ $user_id    = $_SESSION['user_id'] ?? null;
 $page_title = "My Learning | Nextgen Learning";
 
 if (!$user_id) redirect('../login.php');
-
 $courses = get_enrolled_course($conn, $user_id);
 ob_start();
 ?>
@@ -52,12 +51,24 @@ ob_start();
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h2 class="fw-bold mb-1">Welcome back, Student! 👋</h2>
-            <p class="m-0">You have <?= count($courses) ?> active courses in your library.</p>
+            <h3 class="fw-bold mb-1" style="#4d4d4d;">
+                <?php if(count($courses) > 0): ?>
+                    Welcome Back! Continue Your Learning 👋
+                <?php else: ?>
+                    Welcome! Start Your Learning Journey 👋
+                <?php endif; ?>
+            </h3>
+            <p class="m-0">
+                <?php if(count($courses) > 0): ?>
+                    You have <?= count($courses) ?> active <?= count($courses) === 1 ? 'course' : 'courses' ?> in your library.
+                <?php else: ?>
+                    Explore courses and start learning today.
+                <?php endif; ?>
+            </p>
         </div>
         <div class="d-none d-md-block">
             <a href="../our_courses.php?type=paid" class="btn btn-outline-primary rounded-pill px-4">
-                Browse More
+                Browse Courses
             </a>
         </div>
     </div>
@@ -67,7 +78,7 @@ ob_start();
         <!-- ================= EMPTY STATE ================= -->
         <?php if (empty($courses)): ?>
         <div class="col-12">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center py-5">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center">
                 <img 
                     src="../assets/images/empty.jpg" 
                     alt="No Courses Found"
@@ -123,7 +134,7 @@ ob_start();
                     </div>
                 </div>
             <?php else : ?>
-                <div class="col-md-4 action-trigger-hover opacity-25">
+                <div class="col-md-4 action-trigger-hover" style="opacity: 0.6; pointer-events: none;">
                     <div class="card h-100 border course-card">
                         <div class="thumb-container">
                             <img 
@@ -140,8 +151,9 @@ ob_start();
                                 <?= htmlspecialchars($course['title']) ?>
                             </h5>
                             <div class="d-grid">
-                                <a href="watch_course.php?course_id=<?= $course['id'] ?>"
-                                    class="btn btn-dark rounded-pill py-2 fw-bold">
+                                <a href="#" 
+                                class="btn btn-dark rounded-pill py-2 fw-bold disabled" 
+                                style="pointer-events: none; opacity: 0.6;">
                                     <i class="bi bi-play-fill me-2"></i> Resume Learning
                                 </a>
                             </div>

@@ -4,7 +4,8 @@
     <img
       src="./uploads/img/thumbnails/<?= $course['thumbnail'] ?>"
       class="card-img-top"
-      alt="course image" />
+      alt="course image"
+      style="height: 200px; object-fit: cover;" />
     <!-- Card body -->
     <div class="card-body pb-0">
       <!-- Badge and favorite -->

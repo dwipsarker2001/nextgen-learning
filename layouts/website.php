@@ -34,8 +34,6 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
     <!-- Plugins CSS -->
     <link rel="stylesheet" type="text/css" href="assets/vendor/font-awesome/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendor/tiny-slider/tiny-slider.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendor/glightbox/css/glightbox.css">
 
     <!-- Theme CSS -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
@@ -116,7 +114,12 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                                     </div>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?= $dashboard_link ?>"><i class="bi bi-person fa-fw me-2"></i>Admin Panel</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="<?= $dashboard_link ?>">
+                                        <i class="bi bi-person fa-fw me-2"></i>
+                                        <?= ucfirst($_SESSION['user_role']) ?> Panel
+                                    </a>
+                                </li>
                                 <li><a class="dropdown-item bg-danger-soft-hover" href="includes/logout.php"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
                             </ul>
                         </div>
@@ -187,9 +190,9 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
                         <div class="col-6 col-md-4">
                             <h5 class="mb-2 mb-md-4 text-white">Teaching</h5>
                             <ul class="nav flex-column">
-                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">Become an Instructor</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">How to Guide</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="coming_soon.php">Terms &amp; Privacy Policy</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="sign_in.php">Become an Instructor</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="sign_in.php">How to Guide</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="sign_in.php">Terms &amp; Privacy Policy</a></li>
                             </ul>
                         </div>
                     </div>
@@ -231,9 +234,6 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
 
     <!-- JS Scripts -->
     <script src="assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-    <script src="assets/vendor/tiny-slider/tiny-slider.js"></script>
-    <script src="assets/vendor/glightbox/js/glightbox.js"></script>
     <script src="assets/vendor/purecounterjs/dist/purecounter_vanilla.js"></script>
     <script src="assets/js/pass_show_hide.js"></script>
     <script src="assets/js/functions.js"></script>

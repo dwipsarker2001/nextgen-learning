@@ -4,8 +4,11 @@ include '../includes/db.php';
 include('../includes/session.php');
 include '../includes/get_user_by_id.php';
 
+$user_role = $_SESSION['user_role'];
+print_r($user_role);
+
 // variables
-$page_title = "Profile | Admin Panel | Nextgen Learning";
+$page_title = "Profile | Nextgen Learning";
 $user = get_user($conn, $_SESSION['user_id']);
 ob_start();
 ?>
@@ -20,7 +23,7 @@ ob_start();
                 enctype="multipart/form-data">
 
                 <div class="col-12 d-sm-flex justify-content-between align-items-center">
-                  <h4 class=" mb-sm-0">Admin Profile</h4>
+                  <h4 class="mb-sm-0" style="text-transform: capitalize;"><?= $user_role ?> Profile</h4>
                   <button type="submit" class="btn btn-primary mb-0">Update</button>
                 </div>
                 <!-- Upload image START -->
@@ -28,7 +31,12 @@ ob_start();
                     <div
                         class="text-center justify-content-center align-items-center p-4 p-sm-5 border border-2 border-dashed position-relative rounded-3">
                         <!-- Image -->
-                        <img src="../assets/images/element/gallery.svg" class="h-50px" alt="">
+                       <?php if ($user['avatar']) { ?>
+                            <img class="h-50px rounded-circle" src="../uploads/img/users/<?php echo $user['avatar']; ?>" alt="avatar">
+                        <?php } else { ?>
+                            <img class="h-50px rounded-circle" src="../assets/images/avatar/empty-profile.png" alt="avatar">
+                        <?php } ?>
+                        <!-- <img src="../assets/images/element/gallery.svg" class="h-50px" alt=""> -->
                         <div>
                             <h6 class="my-2">Upload course profile picture here, or<a href="#!" class="text-primary">
                                     Browse</a></h6>
@@ -78,8 +86,16 @@ ob_start();
                 <div class="col-md-6">
                     <label class="form-label">Change password</label>
                     <div class="input-group">
-                        <span class="input-group-text">Password</span>
-                        <input name="password" type="password" class="form-control" placeholder="●●●●●●●●●">
+                        <input name="password" 
+                            type="password" 
+                            class="form-control" 
+                            placeholder="●●●●●●●●●"
+                            id="inputPasswordProfile">
+                        <span class="input-group-text px-2 border-0" 
+                            style="cursor: pointer;" 
+                            onclick="togglePassword('inputPasswordProfile')">
+                            <i class="far fa-eye p-2"></i>
+                        </span>
                     </div>
                 </div>
             </form>

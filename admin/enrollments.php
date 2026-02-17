@@ -22,7 +22,7 @@ $total_records = $result['total'];
 $total_pages = ceil($total_records / $limit);
 $start_record = ($page - 1) * $limit + 1;
 $end_record = min($start_record + $limit - 1, $total_records);
-$page_title = "Enrollments | Admin Panel | Nextgen Learning";
+$page_title = "Enrollments | Nextgen Learning";
 ob_start();
 ?>
 

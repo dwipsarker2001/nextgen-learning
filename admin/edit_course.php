@@ -6,10 +6,10 @@ require '../includes/fetch.php';
 require '../includes/get_course_by_id.php';
 
 // variables
-$conditions = "role = 'instructor' or role = 'admin'";
+$conditions = "role = 'instructor'";
 $instructors = fetch_records($conn, 'users', ['conditions' => $conditions])['data'];
 $course = get_detailed_course($conn, $_GET['id']);
-$page_title = "Update Course | Admin Panel | Nextgen Learning";
+$page_title = "Update Course | Nextgen Learning";
 ob_start();
 ?>
 
@@ -134,7 +134,7 @@ ob_start();
                                             <?= (isset($course['instructor']['id']) && $course['instructor']['id'] == $instructor['id']) ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($instructor['first_name'] . ' ' . $instructor['last_name']) ?>
                                         </option>
-                                        <?php endforeach; ?>
+                                        <?php endforeach; ?>    
                                     </select>
                                 </div>
 
@@ -259,11 +259,11 @@ ob_start();
                                                             <?php foreach ($lecture['topics'] as $topic): ?>
                                                             <div class="topic-item d-flex justify-content-between align-items-center">
                                                                 <div class="position-relative">
-                                                                    <span class="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static">
+                                                                    <span onclick="openVideoModal('<?= $topic['video'] ?>')" class="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static">
                                                                         <i class="fas fa-play"></i>
                                                                     </span>
                                                                     <span class="ms-2 mb-0 h6 fw-light">
-                                                                        <?= htmlspecialchars($topic['title']) ?>
+                                                                        <?= htmlspecialchars($topic['title']); ?>
                                                                     </span>
                                                                 </div>
                                                                 <div>
@@ -425,6 +425,39 @@ ob_start();
     </div>
 </div>
 
+
+<!-- ------------------------------->
+<!--       Video Player Popup      -->
+<!-- ------------------------------->
+<div class="modal fade" id="videoPlayerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-dark">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-white">Video Player</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-0">
+        <div class="ratio ratio-16x9">
+          <iframe 
+            id="videoIframe"
+            src=""
+            title="Video Player"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
 <!-- Back to top -->
 <div class="back-top"><i class="bi bi-arrow-up-short position-absolute top-50 start-50 translate-middle"></i></div>
 
@@ -439,6 +472,36 @@ document.getElementById("topicForm").addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent default form submission behavior
     createTopic(this); // Call `createTopic` and pass the form element
 });
+
+
+function openVideoModal(videoUrl) {
+    const iframe = document.getElementById("videoIframe");
+
+    // Convert normal YouTube URL to embed URL
+    if (videoUrl.includes("youtube.com/watch?v=")) {
+      const videoId = videoUrl.split("v=")[1].split("&")[0];
+      videoUrl = "https://www.youtube.com/embed/" + videoId;
+    }
+
+    if (videoUrl.includes("youtu.be/")) {
+      const videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+      videoUrl = "https://www.youtube.com/embed/" + videoId;
+    }
+
+    iframe.src = videoUrl + "?autoplay=1";
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("videoPlayerModal")
+    );
+
+    modal.show();
+  }
+
+  // Stop video when modal closes
+  document.getElementById("videoPlayerModal")
+    .addEventListener("hidden.bs.modal", function () {
+      document.getElementById("videoIframe").src = "";
+    });
 </script>
 
 <?php

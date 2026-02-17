@@ -6,9 +6,9 @@ require '../includes/fetch.php';
 
 
 // variables
-$conditions = "role = 'instructor' or role = 'admin'";
+$conditions = "role = 'instructor'";
 $instructors = fetch_records($conn, 'users', ['conditions' => $conditions])['data'];
-$page_title = "Create Course | Admin Panel | Nextgen Learning";
+$page_title = "Create Course | Nextgen Learning";
 ob_start();
 ?>
 
@@ -127,10 +127,10 @@ ob_start();
                                         aria-label="Select instructor">
                                         <option value="">Choose an instructor</option>
                                         <?php foreach ($instructors as $instructor): ?>
-                                        <option value="<?= htmlspecialchars($instructor['id']) ?>"
-                                            <?= (isset($course['instructor_id']) && $course['instructor_id'] == $instructor['id']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($instructor['first_name'] . ' ' . $instructor['last_name']) ?>
-                                        </option>
+                                            <option value="<?= htmlspecialchars($instructor['id']) ?>"
+                                                <?= (isset($course['instructor_id']) && $course['instructor_id'] == $instructor['id']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($instructor['first_name'] . ' ' . $instructor['last_name']) ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -364,6 +364,36 @@ ob_start();
     </div>
 </div>
 
+<!-- ------------------------------->
+<!--       Video Player Popup      -->
+<!-- ------------------------------->
+<div class="modal fade" id="videoPlayerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-dark">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-white">Video Player</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-0">
+        <div class="ratio ratio-16x9">
+          <iframe 
+            id="videoIframe"
+            src=""
+            title="Video Player"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <!-- Back to top -->
 <div class="back-top"><i class="bi bi-arrow-up-short position-absolute top-50 start-50 translate-middle"></i></div>
 
@@ -378,6 +408,35 @@ document.getElementById("topicForm").addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent default form submission behavior
     createTopic(this); // Call `createTopic` and pass the form element
 });
+
+function openVideoModal(videoUrl) {
+    const iframe = document.getElementById("videoIframe");
+
+    // Convert normal YouTube URL to embed URL
+    if (videoUrl.includes("youtube.com/watch?v=")) {
+      const videoId = videoUrl.split("v=")[1].split("&")[0];
+      videoUrl = "https://www.youtube.com/embed/" + videoId;
+    }
+
+    if (videoUrl.includes("youtu.be/")) {
+      const videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+      videoUrl = "https://www.youtube.com/embed/" + videoId;
+    }
+
+    iframe.src = videoUrl + "?autoplay=1";
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("videoPlayerModal")
+    );
+
+    modal.show();
+  }
+
+  // Stop video when modal closes
+  document.getElementById("videoPlayerModal")
+    .addEventListener("hidden.bs.modal", function () {
+      document.getElementById("videoIframe").src = "";
+    });
 </script>
 
 <?php

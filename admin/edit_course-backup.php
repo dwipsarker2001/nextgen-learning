@@ -5,7 +5,7 @@ include('../includes/session.php');
 include('../includes/get_course_by_id.php');
 
 // variables
-$page_title = "Update Course | Admin Panel | Nextgen Learning";
+$page_title = "Update Course | Nextgen Learning";
 $course = get_detailed_course($conn, $_GET['id']);
 ob_start();
 ?>

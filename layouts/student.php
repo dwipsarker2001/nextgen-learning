@@ -103,7 +103,6 @@ $user = get_user($conn, $user_id);
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
-
                                 <span class="me-2 fw-bold text-white">
                                     <?= $user['first_name'] ?> <?= $user['last_name'] ?>
                                 </span>
@@ -111,13 +110,14 @@ $user = get_user($conn, $user_id);
                                 <?php if ($user['avatar']) { ?>
                                     <img class="rounded-circle"
                                         src="../uploads/img/users/<?php echo $user['avatar']; ?>"
-                                        width="35" height="35">
+                                        width="35" height="35"
+                                        style="object-fit: cover; min-width: 35px;">
                                 <?php } else { ?>
                                     <img class="rounded-circle"
                                         src="../assets/images/avatar/empty-profile.png"
-                                        width="35" height="35">
+                                        width="35" height="35"
+                                        style="object-fit: cover; min-width: 35px;">
                                 <?php } ?>
-
                             </a>
 
                             <!-- Dropdown Menu -->
@@ -189,7 +189,7 @@ $user = get_user($conn, $user_id);
         $message = $isError ? $_SESSION['error_message'] : $_SESSION['success_message'];
         ?>
         <div class="alert alert-<?= $alertType ?> alert-dismissible fade show" role="alert">
-            <strong><?= $alertLabel ?></strong> <?= htmlspecialchars($message) ?>
+            <?= htmlspecialchars($message) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php
@@ -216,6 +216,7 @@ $user = get_user($conn, $user_id);
     <script src="../https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script src="../assets/vendor/stepper/js/bs-stepper.min.js"></script>
     <script src="../assets/vendor/overlay-scrollbar/js/overlayscrollbars.min.js"></script>
+    <script src="../assets/js/pass_show_hide.js"></script>
 
     <!-- Template Functions -->
     <script src="../assets/js/functions.js"></script>

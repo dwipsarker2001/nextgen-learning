@@ -1282,15 +1282,17 @@ function createTopic(form) {
   // reset form
   form.reset();
 
+  console.log(data );
+
   // generate unique id
   const topicId = `topic-${Date.now()}`;
 
   // topic container
-  topicHolder.insertAdjacentHTML(
+  topicHolder.insertAdjacentHTML( 
     "beforeend",
     `<div id="topic" class="d-flex justify-content-between align-items-center topic-element">
         <div class="position-relative">
-          <span class="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"><i class="fas fa-play"></i></span>
+          <span onclick="openVideoModal('{${data.url}')" class="btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static"><i class="fas fa-play"></i></span>
           <span class="ms-2 mb-0 h6 fw-light">${data.name}</span>
         </div>
         <div>

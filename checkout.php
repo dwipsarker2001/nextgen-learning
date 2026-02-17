@@ -75,12 +75,12 @@ ob_start();
 
             <div class="col-md-6 bg-light-input">
               <label for="mobileNumber" class="form-label">Your bKash Account Number *</label>
-              <input type="text" class="form-control" name="phone" id="mobileNumber" placeholder="01700000000" required>
+              <input type="tel" class="form-control" name="phone" id="mobileNumber" placeholder="01700000000" maxlength="11"  pattern="[0-9]{11}"  required>
             </div>
 
             <div class="col-md-6 bg-light-input">
               <label for="trnx_id" class="form-label">bKash Transaction ID *</label>
-              <input type="text" class="form-control" name="tnx_id" id="trnx_id" placeholder="BL08CEOGWU" required>
+              <input type="text" class="form-control" name="tnx_id" id="trnx_id" placeholder="BL08CEOGWU" maxlength="10"  required>
             </div>
 
             <div class="col-12 text-end">

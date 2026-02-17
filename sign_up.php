@@ -116,6 +116,7 @@ ob_start();
                                         name="phone"
                                         id="phone"
                                         pattern="[0-9]{11}"
+                                        maxlength="11"
                                         required
                                     >
                                 </div>

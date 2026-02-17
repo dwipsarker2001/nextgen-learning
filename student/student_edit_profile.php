@@ -81,19 +81,19 @@ ob_start();
                     <input type="text" name="phone" class="form-control" placeholder="Enter your phone number" value="<?= htmlspecialchars($user['phone']); ?>" required>
                 </div>
 
-                <!-- Password Section -->
-                <div class="col-12 mt-4">
-                    <h5 class="mb-3">Change Password</h5>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <input type="password" name="current_password" class="form-control" placeholder="Current Password">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="password" name="new_password" class="form-control" placeholder="New Password">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password">
-                        </div>
+                <div class="col-md-6">
+                    <label class="form-label">Change password</label>
+                    <div class="input-group">
+                        <input name="password" 
+                            type="password" 
+                            class="form-control" 
+                            placeholder="●●●●●●●●●"
+                            id="inputPasswordProfile">
+                        <span class="input-group-text px-2 border-0" 
+                            style="cursor: pointer;" 
+                            onclick="togglePassword('inputPasswordProfile')">
+                            <i class="far fa-eye p-2"></i>
+                        </span>
                     </div>
                 </div>
 

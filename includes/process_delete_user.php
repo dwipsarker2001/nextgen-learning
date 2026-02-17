@@ -35,7 +35,7 @@ switch ($page) {
     $location = "../admin/all_students.php";
     header("Location:  $location");
     break;
-  case 'instructors':
+  case 'instructor':
     $location = '../admin/all_instructors.php';
     header("Location: $location");
     break;

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the query
     if ($stmt->execute()) {
-        $_SESSION['success_message'] = "Congratulations 🎉🎉. Your enrollment is successful!";
+        $_SESSION['success_message'] = "Congratulations! 🎉 Your enrollment has been submitted successfully. Please wait for confirmation.";
         $_SESSION['success_type'] = "alert-success";
         header("Location: ../student/dashboard.php");
         exit;

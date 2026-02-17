@@ -12,7 +12,7 @@ $total_students = get_total_students($conn);
 $total_courses = get_total_courses($conn);
 $total_instructors = get_total_instructors($conn);
 $total_earnings = get_total_earnings($conn);
-$page_title = "Dashboard | Admin Panel | Nextgen Learning";
+$page_title = "Dashboard | Nextgen Learning";
 ob_start();
 ?>
 

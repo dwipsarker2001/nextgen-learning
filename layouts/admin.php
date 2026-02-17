@@ -235,7 +235,7 @@ $user = get_user($conn, $user_id);
                 ?>
 
                 <div class="alert alert-<?= $alertType ?> alert-dismissible fade show" role="alert">
-                    <strong><?= $alertLabel ?></strong> <?= htmlspecialchars($message) ?>
+                    <?= htmlspecialchars($message) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
 

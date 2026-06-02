@@ -1,0 +1,57 @@
+<?php
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Only POST requests are allowed.']);
+    exit;
+}
+
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/course_context.php';
+require_once __DIR__ . '/groq_client.php';
+
+try {
+    $rawBody = file_get_contents('php://input');
+    $payload = json_decode($rawBody, true);
+
+    if (!is_array($payload)) {
+        $payload = $_POST;
+    }
+
+    $question = chatbot_sanitize_question($payload['message'] ?? '', $chatbot_config['max_question_length']);
+
+    if ($question === '') {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'message' => 'Please enter a question.']);
+        exit;
+    }
+
+    $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows']);
+    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars']);
+
+    if ($context === '') {
+        echo json_encode([
+            'success' => true,
+            'answer' => 'I could not find relevant course content in the database for that question.',
+            'sources_count' => 0,
+        ]);
+        exit;
+    }
+
+    $answer = chatbot_call_groq($chatbot_config, $question, $context);
+
+    echo json_encode([
+        'success' => true,
+        'answer' => $answer,
+        'sources_count' => count($rows),
+    ]);
+} catch (Throwable $e) {
+    error_log('[Groq Course Chatbot] ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'The chatbot could not answer right now. Please check the chatbot setup and server logs.',
+    ]);
+}

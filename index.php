@@ -136,6 +136,8 @@ ob_start();
 
 
 
+<?php include 'chatbot/widget.php'; ?>
+
 <?php
 $content = ob_get_clean();
 include('layouts/website.php');

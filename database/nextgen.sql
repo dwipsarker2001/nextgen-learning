@@ -137,6 +137,20 @@ INSERT INTO `topics` (`id`, `lecture_id`, `course_id`, `title`, `video`, `durati
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `watched_topics`
+--
+
+CREATE TABLE `watched_topics` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `course_id` bigint(20) NOT NULL,
+  `watched_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -204,6 +218,17 @@ ALTER TABLE `topics`
   ADD KEY `lecture_id` (`lecture_id`);
 
 --
+-- Indexes for table `watched_topics`
+--
+ALTER TABLE `watched_topics`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `topic_id` (`topic_id`),
+  ADD KEY `course_id` (`course_id`),
+  ADD KEY `idx_user_course` (`user_id`,`course_id`),
+  ADD KEY `idx_user_date` (`user_id`,`watched_at`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -244,6 +269,12 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
+-- AUTO_INCREMENT for table `watched_topics`
+--
+ALTER TABLE `watched_topics`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -258,6 +289,14 @@ ALTER TABLE `lectures`
 --
 ALTER TABLE `topics`
   ADD CONSTRAINT `fk_topics_lectures` FOREIGN KEY (`lecture_id`) REFERENCES `lectures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `watched_topics`
+--
+ALTER TABLE `watched_topics`
+  ADD CONSTRAINT `fk_watched_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_watched_topics` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_watched_courses` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

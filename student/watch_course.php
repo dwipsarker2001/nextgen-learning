@@ -8,11 +8,13 @@ include('../includes/helpers.php');
 include('../includes/get_courses.php');
 include('../includes/get_course_topics.php');
 include('../includes/get_course_lectures.php');
+include('../includes/get_watched.php');
 
 /*---------------------------------------------
     Get course data
 ---------------------------------------------*/
 $course_id = $_GET['course_id'];
+$user_id = $_SESSION['user_id'] ?? 0;
 $course_lectures = get_course_lectures($conn, $course_id);
 
 /*---------------------------------------------
@@ -244,7 +246,8 @@ ob_start();
                                     ?>
                                         <div class="lecture-item play-video" 
                                              data-video-id="<?php echo htmlspecialchars($videoId); ?>" 
-                                             data-title="<?php echo htmlspecialchars($lesson['title']); ?>">
+                                             data-title="<?php echo htmlspecialchars($lesson['title']); ?>"
+                                             data-topic-id="<?php echo (int)$lesson['id']; ?>">
                                             
                                             <div class="play-icon-box">
                                                 <i class="fas fa-play"></i>
@@ -298,6 +301,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     playItems.forEach(item => {
         item.addEventListener('click', function() { loadVideo(this); });
+    });
+
+    function logWatch(topicId, courseId) {
+        fetch('../includes/log_watch.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'topic_id=' + topicId + '&course_id=' + courseId
+        });
+    }
+
+    let currentTopicId = null;
+    let watchTimer = null;
+
+    playItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const topicId = this.getAttribute('data-topic-id');
+            if (topicId) {
+                currentTopicId = topicId;
+                clearTimeout(watchTimer);
+                watchTimer = setTimeout(() => {
+                    logWatch(topicId, <?= (int)$course_id ?>);
+                }, 30000);
+            }
+        });
     });
 });
 </script>

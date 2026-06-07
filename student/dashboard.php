@@ -3,15 +3,28 @@ require_once '../includes/db.php';
 require_once '../includes/session.php';
 require_once '../includes/helpers.php';
 require_once '../includes/get_courses.php';
+require_once '../includes/get_totals.php';
+require_once '../includes/get_progress.php';
+require_once '../includes/get_watched.php';
+require_once '../includes/get_recommendations.php';
 
-/*-------------------------------------------
- | Page Setup
- -------------------------------------------*/
 $user_id    = $_SESSION['user_id'] ?? null;
 $page_title = "My Learning | Nextgen Learning";
 
-if (!$user_id) redirect('../login.php');
+if (!$user_id) redirect('../sign_in.php');
+
 $courses = get_enrolled_course($conn, $user_id);
+$recently_watched = get_recently_watched($conn, $user_id, 5);
+$recommendations = get_course_recommendations($conn, $user_id, 4);
+$streak = get_learning_streak($conn, $user_id);
+$total_watched = get_total_watched_topics($conn, $user_id);
+$completed_courses = get_completed_courses_count($conn, $user_id);
+$in_progress_count = get_in_progress_courses_count($conn, $user_id);
+$enrolled_count = total_course_enrolled($conn, $user_id);
+
+$active_courses = array_filter($courses, fn($c) => $c['isEnrolled'] === 'success');
+$pending_courses = array_filter($courses, fn($c) => $c['isEnrolled'] === 'pending');
+
 ob_start();
 ?>
 
@@ -44,23 +57,68 @@ ob_start();
     backdrop-filter: blur(4px);
     background: rgba(0,0,0,0.5);
 }
+.stat-card {
+    border: none;
+    border-radius: 16px;
+    transition: transform 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+.progress-bar-custom {
+    height: 8px;
+    border-radius: 4px;
+    background: #e9ecef;
+}
+.progress-bar-custom .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #e11d48, #f43f5e);
+    transition: width 0.6s ease;
+}
+.recent-item {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+.recent-item:hover {
+    border-color: #e11d48;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.1);
+}
+.section-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1e293b;
+}
+.rec-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+.rec-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
 </style>
 
-<div class="container py-4">
+<div class="container pb-4">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <!-- ================= HEADER ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
         <div>
-            <h3 class="fw-bold mb-1" style="#4d4d4d;">
-                <?php if(count($courses) > 0): ?>
+            <h3 class="fw-bold mb-1" style="color:#4d4d4d;">
+                <?php if ($enrolled_count > 0): ?>
                     Welcome Back! Continue Your Learning 👋
                 <?php else: ?>
                     Welcome! Start Your Learning Journey 👋
                 <?php endif; ?>
             </h3>
-            <p class="m-0">
-                <?php if(count($courses) > 0): ?>
-                    You have <?= count($courses) ?> active <?= count($courses) === 1 ? 'course' : 'courses' ?> in your library.
+            <p class="m-0 text-muted">
+                <?php if ($enrolled_count > 0): ?>
+                    You have <?= $enrolled_count ?> active <?= $enrolled_count === 1 ? 'course' : 'courses' ?> in your library.
                 <?php else: ?>
                     Explore courses and start learning today.
                 <?php endif; ?>
@@ -68,103 +126,223 @@ ob_start();
         </div>
         <div class="d-none d-md-block">
             <a href="../our_courses.php?type=paid" class="btn btn-outline-primary rounded-pill px-4">
-                Browse Courses
+                <i class="bi bi-search me-1"></i> Browse Courses
             </a>
         </div>
     </div>
 
-    <div class="row g-4">
+    <?php if (empty($courses)): ?>
 
-        <!-- ================= EMPTY STATE ================= -->
-        <?php if (empty($courses)): ?>
-        <div class="col-12">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center">
-                <img 
-                    src="../assets/images/empty.jpg" 
-                    alt="No Courses Found"
-                    class="img-fluid mb-4"
-                    style="max-width: 360px;"
-                >
+    <!-- ================= EMPTY STATE ================= -->
+    <div class="d-flex flex-column align-items-center justify-content-center text-center py-5">
+        <img src="../assets/images/empty.jpg" alt="No Courses Found" class="img-fluid mb-4" style="max-width: 360px;">
+        <h3 class="fw-bold mb-2">No Courses Yet 📚</h3>
+        <p class="mb-4" style="max-width:520px;">
+            You haven't enrolled in any courses yet.
+            Start learning today by exploring our curated courses
+            and begin your learning journey with Nextgen Learning.
+        </p>
+        <div class="d-flex gap-3">
+            <a href="../our_courses.php?type=paid" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-search me-1"></i> Browse Courses
+            </a>
+            <a href="../our_courses.php?type=free" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-lightning-charge me-1"></i> Free Courses
+            </a>
+        </div>
+    </div>
 
-                <h3 class="fw-bold mb-2">No Courses Yet 📚</h3>
-                <p class=" mb-4" style="max-width:520px;">
-                    You haven’t enrolled in any courses yet.
-                    Start learning today by exploring our curated courses
-                    and begin your learning journey with Nextgen Learning.
-                </p>
-                <div class="d-flex gap-3">
-                    <a href="../our_courses.php?type=paid" class="btn btn-primary rounded-pill px-4">
-                        <i class="bi bi-search me-1"></i> Browse Courses
-                    </a>
+    <?php else: ?>
 
-                    <a href="../our_courses.php?type=free" class="btn btn-outline-secondary rounded-pill px-4">
-                        <i class="bi bi-lightning-charge me-1"></i> Free Courses
-                    </a>
+    <!-- ================= STATS ROW ================= -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card card card-body bg-primary bg-opacity-10 p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold mb-0 text-primary"><?= $enrolled_count ?></h2>
+                        <span class="small fw-semibold text-muted">Enrolled</span>
+                    </div>
+                    <div class="icon-lg rounded-circle bg-primary text-white">
+                        <i class="fas fa-book-open fa-fw"></i>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- ================= COURSE LIST ================= -->
-        <?php else: ?>
-        <?php foreach ($courses as $course):?>
-            <?php if ($course['isEnrolled'] == "success") :?>
-                <div class="col-md-4 action-trigger-hover">
-                    <div class="card h-100 border course-card">
-                        <div class="thumb-container">
-                            <img 
-                                class="card-img-top"
-                                src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
-                                alt="Course Image"
-                            >
-                            <span class="badge badge-overlay text-white px-3 py-2 rounded-pill">
-                                <i class="bi bi-clock me-1"></i> 12h 30m
-                            </span>
-                        </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mt-1 mb-3">
-                                <?= htmlspecialchars($course['title']) ?>
-                            </h5>
-                            <div class="d-grid">
-                                <a href="watch_course.php?course_id=<?= $course['id'] ?>"
-                                    class="btn btn-dark rounded-pill py-2 fw-bold">
-                                    <i class="bi bi-play-fill me-2"></i> Resume Learning
-                                </a>
-                            </div>
-                        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card card-body bg-success bg-opacity-10 p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold mb-0 text-success"><?= $completed_courses ?></h2>
+                        <span class="small fw-semibold text-muted">Completed</span>
+                    </div>
+                    <div class="icon-lg rounded-circle bg-success text-white">
+                        <i class="fas fa-check-circle fa-fw"></i>
                     </div>
                 </div>
-            <?php else : ?>
-                <div class="col-md-4 action-trigger-hover" style="opacity: 0.6; pointer-events: none;">
-                    <div class="card h-100 border course-card">
-                        <div class="thumb-container">
-                            <img 
-                                class="card-img-top"
-                                src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
-                                alt="Course Image"
-                            >
-                            <span class="badge badge-overlay text-white px-3 py-2 rounded-pill">
-                                <i class="bi bi-clock me-1"></i> 12h 30m
-                            </span>
-                        </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mt-1 mb-3">
-                                <?= htmlspecialchars($course['title']) ?>
-                            </h5>
-                            <div class="d-grid">
-                                <a href="#" 
-                                class="btn btn-dark rounded-pill py-2 fw-bold disabled" 
-                                style="pointer-events: none; opacity: 0.6;">
-                                    <i class="bi bi-play-fill me-2"></i> Resume Learning
-                                </a>
-                            </div>
-                        </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card card-body bg-warning bg-opacity-10 p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold mb-0 text-warning"><?= $streak ?> 🔥</h2>
+                        <span class="small fw-semibold text-muted">Day Streak</span>
+                    </div>
+                    <div class="icon-lg rounded-circle bg-warning text-white">
+                        <i class="fas fa-fire fa-fw"></i>
                     </div>
                 </div>
-            <?php endif ?>
-        <?php endforeach; ?>
-        <?php endif; ?>
-
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card card-body bg-info bg-opacity-10 p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold mb-0 text-info"><?= $total_watched ?></h2>
+                        <span class="small fw-semibold text-muted">Lessons Done</span>
+                    </div>
+                    <div class="icon-lg rounded-circle bg-info text-white">
+                        <i class="fas fa-play-circle fa-fw"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- ================= RECENTLY WATCHED ================= -->
+    <?php if (!empty($recently_watched)): ?>
+    <div class="mb-4">
+        <h5 class="section-title mb-3"><i class="bi bi-clock-history me-2"></i>Recently Watched</h5>
+        <div class="row g-3">
+            <?php foreach ($recently_watched as $item): ?>
+            <div class="col-6 col-md">
+                <a href="watch_course.php?course_id=<?= $item['course_id'] ?>" class="text-decoration-none">
+                    <div class="recent-item p-3 text-center">
+                        <div class="rounded-3 overflow-hidden mb-2" style="height:70px;">
+                            <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
+                                 alt="" class="w-100 h-100" style="object-fit:cover;">
+                        </div>
+                        <h6 class="small fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($item['topic_title']) ?></h6>
+                        <small class="text-muted"><?= htmlspecialchars($item['course_title']) ?></small>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- ================= ACTIVE COURSES WITH PROGRESS ================= -->
+    <div class="mb-4">
+        <h5 class="section-title mb-3"><i class="bi bi-collection-play me-2"></i>My Courses</h5>
+        <div class="row g-4">
+            <?php foreach ($active_courses as $course):
+                $progress = get_course_progress($conn, $user_id, $course['id']);
+            ?>
+            <div class="col-md-4 action-trigger-hover">
+                <div class="card h-100 border course-card">
+                    <div class="thumb-container">
+                        <img class="card-img-top"
+                             src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                             alt="Course Image">
+                        <span class="badge badge-overlay text-white px-3 py-2 rounded-pill">
+                            <i class="bi bi-clock me-1"></i> <?= htmlspecialchars($course['duration']) ?>
+                        </span>
+                        <?php if ($progress >= 100): ?>
+                        <span class="badge bg-success position-absolute bottom-0 start-0 m-2 px-3 py-1 rounded-pill">
+                            <i class="bi bi-check-circle me-1"></i> Completed
+                        </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="fw-semibold"><?= $progress ?>% complete</span>
+                                <span class="text-muted"><?= $progress >= 100 ? 'Done!' : 'In progress' ?></span>
+                            </div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: <?= $progress ?>%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <a href="watch_course.php?course_id=<?= $course['id'] ?>"
+                               class="btn btn-dark rounded-pill py-2 fw-bold">
+                                <i class="bi bi-play-fill me-2"></i>
+                                <?= $progress >= 100 ? 'Review Course' : 'Resume Learning' ?>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- ================= PENDING ENROLLMENTS ================= -->
+    <?php if (!empty($pending_courses)): ?>
+    <div class="mb-4">
+        <h5 class="section-title mb-3"><i class="bi bi-hourglass-split me-2"></i>Pending Enrollments</h5>
+        <div class="row g-4">
+            <?php foreach ($pending_courses as $course): ?>
+            <div class="col-md-4 action-trigger-hover" style="opacity:0.6; pointer-events:none;">
+                <div class="card h-100 border course-card">
+                    <div class="thumb-container">
+                        <img class="card-img-top"
+                             src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                             alt="Course Image">
+                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">
+                            <i class="bi bi-hourglass-split me-1"></i> Pending
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
+                        <p class="text-muted small mb-2">Awaiting payment confirmation</p>
+                        <div class="d-grid">
+                            <a href="#" class="btn btn-dark rounded-pill py-2 fw-bold disabled">
+                                <i class="bi bi-lock-fill me-2"></i> Pending Approval
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- ================= RECOMMENDED COURSES ================= -->
+    <?php if (!empty($recommendations)): ?>
+    <div class="mb-4">
+        <h5 class="section-title mb-3"><i class="bi bi-star me-2"></i>Recommended for You</h5>
+        <div class="row g-4">
+            <?php foreach ($recommendations as $course): ?>
+            <div class="col-6 col-md-3">
+                <a href="../course_details.php?id=<?= $course['id'] ?>" class="text-decoration-none">
+                    <div class="rec-card">
+                        <div style="height:120px; overflow:hidden;">
+                            <img src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                                 alt="" class="w-100 h-100" style="object-fit:cover;">
+                        </div>
+                        <div class="p-3">
+                            <h6 class="fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($course['title']) ?></h6>
+                            <span class="badge bg-dark rounded-pill">
+                                <?= $course['price'] == 0 ? 'Free' : '৳ ' . $course['price'] ?>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <?php endif; ?>
+
 </div>
 
 <?php

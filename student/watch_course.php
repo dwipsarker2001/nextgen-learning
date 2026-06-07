@@ -303,8 +303,8 @@ ob_start();
                             <p class="text-uppercase small fw-bold text-primary mb-1">Now Playing</p>
                             <h4 id="currentVideoTitle" class="text-truncate">Select a lesson to start learning</h4>
                         </div>
-                        <button id="quizBtn" class="quiz-btn flex-shrink-0 d-none" onclick="openQuiz()">
-                            <i class="fas fa-question-circle me-1"></i> Take Quiz
+                        <button id="quizBtn" class="quiz-btn flex-shrink-0" onclick="openQuiz()" title="Test your knowledge on this topic">
+                            <i class="fas fa-question-circle me-1"></i> Quiz
                         </button>
                     </div>
                 </div>
@@ -456,9 +456,6 @@ function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED && currentTopicId) {
         logWatch(currentTopicId, courseId);
         markWatched(currentTopicId);
-        document.getElementById('quizBtn').classList.remove('d-none');
-    } else if (event.data === YT.PlayerState.PLAYING) {
-        document.getElementById('quizBtn').classList.add('d-none');
     }
 }
 

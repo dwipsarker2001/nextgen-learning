@@ -102,12 +102,28 @@ ob_start();
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.08);
 }
+.nav-tabs .nav-link {
+    font-weight: 600;
+    color: #64748b;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.25rem;
+}
+.nav-tabs .nav-link:hover {
+    color: #e11d48;
+    border-bottom-color: #f1f5f9;
+}
+.nav-tabs .nav-link.active {
+    color: #e11d48;
+    border-bottom-color: #e11d48;
+    background: none;
+}
 </style>
 
 <div class="container pb-4">
 
     <!-- ================= HEADER ================= -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 pt-4">
         <div>
             <h3 class="fw-bold mb-1" style="color:#4d4d4d;">
                 <?php if ($enrolled_count > 0): ?>
@@ -154,192 +170,235 @@ ob_start();
 
     <?php else: ?>
 
-    <!-- ================= STATS ROW ================= -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3">
-            <div class="stat-card card card-body bg-primary bg-opacity-10 p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-primary"><?= $enrolled_count ?></h2>
-                        <span class="small fw-semibold text-muted">Enrolled</span>
-                    </div>
-                    <div class="icon-lg rounded-circle bg-primary text-white">
-                        <i class="fas fa-book-open fa-fw"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="stat-card card card-body bg-success bg-opacity-10 p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-success"><?= $completed_courses ?></h2>
-                        <span class="small fw-semibold text-muted">Completed</span>
-                    </div>
-                    <div class="icon-lg rounded-circle bg-success text-white">
-                        <i class="fas fa-check-circle fa-fw"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="stat-card card card-body bg-warning bg-opacity-10 p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-warning"><?= $streak ?> 🔥</h2>
-                        <span class="small fw-semibold text-muted">Day Streak</span>
-                    </div>
-                    <div class="icon-lg rounded-circle bg-warning text-white">
-                        <i class="fas fa-fire fa-fw"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="stat-card card card-body bg-info bg-opacity-10 p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-info"><?= $total_watched ?></h2>
-                        <span class="small fw-semibold text-muted">Lessons Done</span>
-                    </div>
-                    <div class="icon-lg rounded-circle bg-info text-white">
-                        <i class="fas fa-play-circle fa-fw"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- ================= TABS ================= -->
+    <ul class="nav nav-tabs mb-4" id="dashboardTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                <i class="bi bi-speedometer2 me-1"></i> Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab">
+                <i class="bi bi-collection-play me-1"></i> My Courses
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="explore-tab" data-bs-toggle="tab" data-bs-target="#explore" type="button" role="tab">
+                <i class="bi bi-star me-1"></i> Explore
+            </button>
+        </li>
+    </ul>
 
-    <!-- ================= RECENTLY WATCHED ================= -->
-    <?php if (!empty($recently_watched)): ?>
-    <div class="mb-4">
-        <h5 class="section-title mb-3"><i class="bi bi-clock-history me-2"></i>Recently Watched</h5>
-        <div class="row g-3">
-            <?php foreach ($recently_watched as $item): ?>
-            <div class="col-6 col-md">
-                <a href="watch_course.php?course_id=<?= $item['course_id'] ?>" class="text-decoration-none">
-                    <div class="recent-item p-3 text-center">
-                        <div class="rounded-3 overflow-hidden mb-2" style="height:70px;">
-                            <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
-                                 alt="" class="w-100 h-100" style="object-fit:cover;">
-                        </div>
-                        <h6 class="small fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($item['topic_title']) ?></h6>
-                        <small class="text-muted"><?= htmlspecialchars($item['course_title']) ?></small>
-                    </div>
-                </a>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
+    <div class="tab-content" id="dashboardTabContent">
 
-    <!-- ================= ACTIVE COURSES WITH PROGRESS ================= -->
-    <div class="mb-4">
-        <h5 class="section-title mb-3"><i class="bi bi-collection-play me-2"></i>My Courses</h5>
-        <div class="row g-4">
-            <?php foreach ($active_courses as $course):
-                $progress = get_course_progress($conn, $user_id, $course['id']);
-            ?>
-            <div class="col-md-4 action-trigger-hover">
-                <div class="card h-100 border course-card">
-                    <div class="thumb-container">
-                        <img class="card-img-top"
-                             src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
-                             alt="Course Image">
-                        <span class="badge badge-overlay text-white px-3 py-2 rounded-pill">
-                            <i class="bi bi-clock me-1"></i> <?= htmlspecialchars($course['duration']) ?>
-                        </span>
-                        <?php if ($progress >= 100): ?>
-                        <span class="badge bg-success position-absolute bottom-0 start-0 m-2 px-3 py-1 rounded-pill">
-                            <i class="bi bi-check-circle me-1"></i> Completed
-                        </span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
+        <!-- ================= TAB 1: OVERVIEW ================= -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel">
 
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span class="fw-semibold"><?= $progress ?>% complete</span>
-                                <span class="text-muted"><?= $progress >= 100 ? 'Done!' : 'In progress' ?></span>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card card card-body bg-primary bg-opacity-10 p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0 text-primary"><?= $enrolled_count ?></h2>
+                                <span class="small fw-semibold text-muted">Enrolled</span>
                             </div>
-                            <div class="progress-bar-custom">
-                                <div class="progress-fill" style="width: <?= $progress ?>%;"></div>
+                            <div class="icon-lg rounded-circle bg-primary text-white">
+                                <i class="fas fa-book-open fa-fw"></i>
                             </div>
                         </div>
-
-                        <div class="d-grid">
-                            <a href="watch_course.php?course_id=<?= $course['id'] ?>"
-                               class="btn btn-dark rounded-pill py-2 fw-bold">
-                                <i class="bi bi-play-fill me-2"></i>
-                                <?= $progress >= 100 ? 'Review Course' : 'Resume Learning' ?>
-                            </a>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card card card-body bg-success bg-opacity-10 p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0 text-success"><?= $completed_courses ?></h2>
+                                <span class="small fw-semibold text-muted">Completed</span>
+                            </div>
+                            <div class="icon-lg rounded-circle bg-success text-white">
+                                <i class="fas fa-check-circle fa-fw"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card card card-body bg-warning bg-opacity-10 p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0 text-warning"><?= $streak ?> 🔥</h2>
+                                <span class="small fw-semibold text-muted">Day Streak</span>
+                            </div>
+                            <div class="icon-lg rounded-circle bg-warning text-white">
+                                <i class="fas fa-fire fa-fw"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card card card-body bg-info bg-opacity-10 p-3 p-md-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="fw-bold mb-0 text-info"><?= $total_watched ?></h2>
+                                <span class="small fw-semibold text-muted">Lessons Done</span>
+                            </div>
+                            <div class="icon-lg rounded-circle bg-info text-white">
+                                <i class="fas fa-play-circle fa-fw"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
 
-    <!-- ================= PENDING ENROLLMENTS ================= -->
-    <?php if (!empty($pending_courses)): ?>
-    <div class="mb-4">
-        <h5 class="section-title mb-3"><i class="bi bi-hourglass-split me-2"></i>Pending Enrollments</h5>
-        <div class="row g-4">
-            <?php foreach ($pending_courses as $course): ?>
-            <div class="col-md-4 action-trigger-hover" style="opacity:0.6; pointer-events:none;">
-                <div class="card h-100 border course-card">
-                    <div class="thumb-container">
-                        <img class="card-img-top"
-                             src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
-                             alt="Course Image">
-                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">
-                            <i class="bi bi-hourglass-split me-1"></i> Pending
-                        </span>
+            <?php if (!empty($recently_watched)): ?>
+            <div>
+                <h5 class="section-title mb-3"><i class="bi bi-clock-history me-2"></i>Recently Watched</h5>
+                <div class="row g-3">
+                    <?php foreach ($recently_watched as $item): ?>
+                    <div class="col-6 col-md">
+                        <a href="watch_course.php?course_id=<?= $item['course_id'] ?>" class="text-decoration-none">
+                            <div class="recent-item p-3 text-center">
+                                <div class="rounded-3 overflow-hidden mb-2" style="height:70px;">
+                                    <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
+                                         alt="" class="w-100 h-100" style="object-fit:cover;">
+                                </div>
+                                <h6 class="small fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($item['topic_title']) ?></h6>
+                                <small class="text-muted"><?= htmlspecialchars($item['course_title']) ?></small>
+                            </div>
+                        </a>
                     </div>
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
-                        <p class="text-muted small mb-2">Awaiting payment confirmation</p>
-                        <div class="d-grid">
-                            <a href="#" class="btn btn-dark rounded-pill py-2 fw-bold disabled">
-                                <i class="bi bi-lock-fill me-2"></i> Pending Approval
-                            </a>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
+            <?php endif; ?>
 
-    <!-- ================= RECOMMENDED COURSES ================= -->
-    <?php if (!empty($recommendations)): ?>
-    <div class="mb-4">
-        <h5 class="section-title mb-3"><i class="bi bi-star me-2"></i>Recommended for You</h5>
-        <div class="row g-4">
-            <?php foreach ($recommendations as $course): ?>
-            <div class="col-6 col-md-3">
-                <a href="../course_details.php?id=<?= $course['id'] ?>" class="text-decoration-none">
-                    <div class="rec-card">
-                        <div style="height:120px; overflow:hidden;">
-                            <img src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
-                                 alt="" class="w-100 h-100" style="object-fit:cover;">
-                        </div>
-                        <div class="p-3">
-                            <h6 class="fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($course['title']) ?></h6>
-                            <span class="badge bg-dark rounded-pill">
-                                <?= $course['price'] == 0 ? 'Free' : '৳ ' . $course['price'] ?>
-                            </span>
+        </div>
+
+        <!-- ================= TAB 2: MY COURSES ================= -->
+        <div class="tab-pane fade" id="courses" role="tabpanel">
+
+            <div class="mb-4">
+                <h5 class="section-title mb-3"><i class="bi bi-collection-play me-2"></i>Active Courses</h5>
+                <div class="row g-4">
+                    <?php foreach ($active_courses as $course):
+                        $progress = get_course_progress($conn, $user_id, $course['id']);
+                    ?>
+                    <div class="col-md-4 action-trigger-hover">
+                        <div class="card h-100 border course-card">
+                            <div class="thumb-container">
+                                <img class="card-img-top"
+                                     src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                                     alt="Course Image">
+                                <span class="badge badge-overlay text-white px-3 py-2 rounded-pill">
+                                    <i class="bi bi-clock me-1"></i> <?= htmlspecialchars($course['duration']) ?>
+                                </span>
+                                <?php if ($progress >= 100): ?>
+                                <span class="badge bg-success position-absolute bottom-0 start-0 m-2 px-3 py-1 rounded-pill">
+                                    <i class="bi bi-check-circle me-1"></i> Completed
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="fw-semibold"><?= $progress ?>% complete</span>
+                                        <span class="text-muted"><?= $progress >= 100 ? 'Done!' : 'In progress' ?></span>
+                                    </div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill" style="width: <?= $progress ?>%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <a href="watch_course.php?course_id=<?= $course['id'] ?>"
+                                       class="btn btn-dark rounded-pill py-2 fw-bold">
+                                        <i class="bi bi-play-fill me-2"></i>
+                                        <?= $progress >= 100 ? 'Review Course' : 'Resume Learning' ?>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <?php if (!empty($pending_courses)): ?>
+            <div>
+                <h5 class="section-title mb-3"><i class="bi bi-hourglass-split me-2"></i>Pending Enrollments</h5>
+                <div class="row g-4">
+                    <?php foreach ($pending_courses as $course): ?>
+                    <div class="col-md-4 action-trigger-hover" style="opacity:0.6; pointer-events:none;">
+                        <div class="card h-100 border course-card">
+                            <div class="thumb-container">
+                                <img class="card-img-top"
+                                     src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                                     alt="Course Image">
+                                <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill">
+                                    <i class="bi bi-hourglass-split me-1"></i> Pending
+                                </span>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="card-title fw-bold mt-1 mb-3"><?= htmlspecialchars($course['title']) ?></h5>
+                                <p class="text-muted small mb-2">Awaiting payment confirmation</p>
+                                <div class="d-grid">
+                                    <a href="#" class="btn btn-dark rounded-pill py-2 fw-bold disabled">
+                                        <i class="bi bi-lock-fill me-2"></i> Pending Approval
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+        </div>
+
+        <!-- ================= TAB 3: EXPLORE ================= -->
+        <div class="tab-pane fade" id="explore" role="tabpanel">
+
+            <div class="mb-4">
+                <h5 class="section-title mb-3"><i class="bi bi-star me-2"></i>Recommended for You</h5>
+                <?php if (!empty($recommendations)): ?>
+                <div class="row g-4">
+                    <?php foreach ($recommendations as $course): ?>
+                    <div class="col-6 col-md-3">
+                        <a href="../course_details.php?id=<?= $course['id'] ?>" class="text-decoration-none">
+                            <div class="rec-card">
+                                <div style="height:120px; overflow:hidden;">
+                                    <img src="../uploads/img/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>"
+                                         alt="" class="w-100 h-100" style="object-fit:cover;">
+                                </div>
+                                <div class="p-3">
+                                    <h6 class="fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($course['title']) ?></h6>
+                                    <span class="badge bg-dark rounded-pill">
+                                        <?= $course['price'] == 0 ? 'Free' : '৳ ' . $course['price'] ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                <div class="text-center py-5">
+                    <p class="text-muted">No recommendations available yet. Keep learning!</p>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="../our_courses.php" class="btn btn-outline-primary rounded-pill px-5">
+                    <i class="bi bi-grid me-1"></i> Browse All Courses
                 </a>
             </div>
-            <?php endforeach; ?>
+
         </div>
+
     </div>
-    <?php endif; ?>
 
     <?php endif; ?>
 

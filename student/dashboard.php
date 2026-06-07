@@ -14,7 +14,7 @@ $page_title = "My Learning | Nextgen Learning";
 if (!$user_id) redirect('../sign_in.php');
 
 $courses = get_enrolled_course($conn, $user_id);
-$recently_watched = get_recently_watched($conn, $user_id, 5);
+$recently_watched = get_recently_watched($conn, $user_id, 6);
 $recommendations = get_course_recommendations($conn, $user_id, 4);
 $streak = get_learning_streak($conn, $user_id);
 $total_watched = get_total_watched_topics($conn, $user_id);

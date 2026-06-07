@@ -59,17 +59,19 @@ ob_start();
         Video Player Wrapper
     ---------------------------------------------*/
     .player-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
         border-radius: 12px;
         overflow: hidden;
         background: #000;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    
-    .player-wrapper > div {
-        aspect-ratio: 16/9;
-        width: 100%;
-    }
+
+    .player-wrapper > div,
     .player-wrapper iframe {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
     }

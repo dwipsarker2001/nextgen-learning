@@ -22,6 +22,8 @@ $course_lectures = get_course_lectures($conn, $course_id);
 ---------------------------------------------*/
 $page_title = "Learning Room | Nextgen Learning";
 
+$resume_topic_id = isset($_GET['topic_id']) ? (int)$_GET['topic_id'] : 0;
+
 $watched_topic_ids = [];
 if ($user_id) {
     $stmt_w = $conn->prepare("SELECT DISTINCT topic_id FROM watched_topics WHERE user_id = ? AND course_id = ?");
@@ -302,6 +304,7 @@ ob_start();
 let player;
 let currentTopicId = null;
 const courseId = <?= (int)$course_id ?>;
+const resumeTopicId = <?= $resume_topic_id ?>;
 const watchedTopics = <?= $watched_json ?>;
 
 function onYouTubeIframeAPIReady() {
@@ -368,7 +371,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (playItems.length > 0) {
+    function findTopicElement(topicId) {
+        return document.querySelector(`.play-video[data-topic-id="${topicId}"]`);
+    }
+
+    const initialTarget = resumeTopicId ? findTopicElement(resumeTopicId) : null;
+    if (initialTarget) {
+        setTimeout(() => loadVideo(initialTarget), 500);
+        initialTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (playItems.length > 0) {
         setTimeout(() => loadVideo(playItems[0]), 500);
     }
 

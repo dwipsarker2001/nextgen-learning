@@ -307,7 +307,7 @@ ob_start();
                 <div class="row g-3">
                     <?php foreach ($recently_watched as $item): ?>
                     <div class="col-12 col-md-6">
-                        <a href="watch_course.php?course_id=<?= $item['course_id'] ?>" class="text-decoration-none">
+                        <a href="watch_course.php?course_id=<?= $item['course_id'] ?>&topic_id=<?= $item['topic_id'] ?>" class="text-decoration-none">
                             <div class="recent-card d-flex align-items-stretch">
                                 <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
                                      alt="" class="recent-thumb">

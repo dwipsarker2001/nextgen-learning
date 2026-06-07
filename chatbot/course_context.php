@@ -45,12 +45,12 @@ function chatbot_extract_keywords($question)
     return array_keys($keywords);
 }
 
-function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows)
+function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseId = null)
 {
     $keywords = chatbot_extract_keywords($question);
 
     if (empty($keywords)) {
-        return chatbot_fetch_course_overview_rows($conn, $maxRows);
+        return chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId);
     }
 
     if (in_array('free', $keywords, true)) {
@@ -107,18 +107,23 @@ function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows)
         LEFT JOIN users u ON c.instructor_id = u.id
         LEFT JOIN lectures l ON l.course_id = c.id
         LEFT JOIN topics t ON t.lecture_id = l.id
-        WHERE " . implode(' OR ', $clauses) . "
-        ORDER BY c.updated_at DESC, c.id DESC, l.id ASC, t.id ASC
-        LIMIT ?
+        WHERE (" . implode(' OR ', $clauses) . ")
     ";
 
+    if ($courseId) {
+        $sql .= " AND c.id = ?";
+        $params[] = $courseId;
+    }
+
+    $sql .= " ORDER BY c.updated_at DESC, c.id DESC, l.id ASC, t.id ASC LIMIT ?";
+
     $params[] = $maxRows;
-    $types = str_repeat('s', count($params) - 1) . 'i';
+    $types = str_repeat('s', count($params) - 1 - ($courseId ? 1 : 0)) . ($courseId ? 'i' : '') . 'i';
 
     return chatbot_run_course_query($conn, $sql, $types, $params);
 }
 
-function chatbot_fetch_course_overview_rows($conn, $maxRows)
+function chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId = null)
 {
     $sql = "
         SELECT
@@ -143,11 +148,21 @@ function chatbot_fetch_course_overview_rows($conn, $maxRows)
         LEFT JOIN users u ON c.instructor_id = u.id
         LEFT JOIN lectures l ON l.course_id = c.id
         LEFT JOIN topics t ON t.lecture_id = l.id
-        ORDER BY c.updated_at DESC, c.id DESC, l.id ASC, t.id ASC
-        LIMIT ?
     ";
 
-    return chatbot_run_course_query($conn, $sql, 'i', [$maxRows]);
+    $params = [];
+
+    if ($courseId) {
+        $sql .= " WHERE c.id = ?";
+        $params[] = $courseId;
+    }
+
+    $sql .= " ORDER BY c.updated_at DESC, c.id DESC, l.id ASC, t.id ASC LIMIT ?";
+    $params[] = $maxRows;
+
+    $types = ($courseId ? 'i' : '') . 'i';
+
+    return chatbot_run_course_query($conn, $sql, $types, $params);
 }
 
 function chatbot_run_course_query($conn, $sql, $types, $params)

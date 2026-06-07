@@ -142,6 +142,14 @@ function format_date($date)
 }
 
 // ----------------------------------------------
+// Redirect helper
+// ---------------------------------------------
+function redirect($url) {
+    header('Location: ' . $url);
+    exit();
+}
+
+// ----------------------------------------------
 // Role checker function
 // ---------------------------------------------
 function isUser($role) {

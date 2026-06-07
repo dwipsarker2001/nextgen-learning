@@ -21,6 +21,7 @@ try {
     }
 
     $question = chatbot_sanitize_question($payload['message'] ?? '', $chatbot_config['max_question_length']);
+    $courseId = isset($payload['course_id']) ? (int) $payload['course_id'] : null;
 
     if ($question === '') {
         http_response_code(422);
@@ -28,7 +29,7 @@ try {
         exit;
     }
 
-    $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows']);
+    $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
     $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars']);
 
     if ($context === '') {

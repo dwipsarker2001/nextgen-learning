@@ -11,7 +11,7 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
         <i class="bi bi-chat-dots-fill"></i>
     </button>
 
-    <section class="ng-chat-window" id="ngChatWindow" aria-label="Groq AI Course Chatbot" hidden>
+    <section class="ng-chat-window" style="padding: 0;" id="ngChatWindow" aria-label="Groq AI Course Chatbot" hidden>
         <header class="ng-chat-header">
             <div>
                 <h2>Course Chatbot</h2>

@@ -219,6 +219,70 @@ ob_start();
     /*---------------------------------------------
         Responsive
     ---------------------------------------------*/
+    .quiz-btn {
+        background: linear-gradient(135deg, #e11d48, #be123c);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.25s ease;
+    }
+    .quiz-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(225, 29, 72, 0.35);
+        color: #fff;
+    }
+    .quiz-btn:disabled {
+        opacity: 0.5;
+        transform: none;
+        box-shadow: none;
+    }
+    .quiz-option {
+        display: block;
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+    .quiz-option:hover {
+        border-color: #e11d48;
+        background: #fff1f2;
+    }
+    .quiz-option.selected {
+        border-color: #e11d48;
+        background: #fff1f2;
+        font-weight: 600;
+    }
+    .quiz-option.correct {
+        border-color: #22c55e;
+        background: #f0fdf4;
+        color: #15803d;
+    }
+    .quiz-option.wrong {
+        border-color: #ef4444;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+    .quiz-progress {
+        height: 4px;
+        border-radius: 2px;
+        background: #e2e8f0;
+    }
+    .quiz-progress .fill {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #e11d48, #f43f5e);
+        transition: width 0.4s ease;
+    }
+
     @media (max-width: 991px) {
         .curriculum-card { height: 500px; margin-top: 2rem; }
     }
@@ -234,8 +298,15 @@ ob_start();
                 </div>
                 
                 <div class="video-title-section">
-                    <p class="text-uppercase small fw-bold text-primary mb-1">Now Playing</p>
-                    <h4 id="currentVideoTitle">Select a lesson to start learning</h4>
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                        <div class="flex-grow-1 min-width-0">
+                            <p class="text-uppercase small fw-bold text-primary mb-1">Now Playing</p>
+                            <h4 id="currentVideoTitle" class="text-truncate">Select a lesson to start learning</h4>
+                        </div>
+                        <button id="quizBtn" class="quiz-btn flex-shrink-0 d-none" onclick="openQuiz()">
+                            <i class="fas fa-question-circle me-1"></i> Take Quiz
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -300,6 +371,54 @@ ob_start();
     </div>
 </main>
 
+<!-- ================= QUIZ MODAL ================= -->
+<div class="modal fade" id="quizModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px; border:none;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-question-circle text-primary me-2"></i>
+                    <span id="quizTopicLabel">Quiz</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body px-4">
+
+                <div class="quiz-progress mb-4">
+                    <div class="fill" id="quizProgress" style="width:0%;"></div>
+                </div>
+
+                <div id="quizQuestionArea">
+                    <p class="small text-muted mb-1" id="quizCounter">Question 1 of 5</p>
+                    <h5 class="fw-bold mb-3" id="quizQuestion">Loading...</h5>
+                    <div id="quizOptions"></div>
+                </div>
+
+                <div id="quizResultArea" class="d-none text-center py-4">
+                    <div id="quizScoreCircle" class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                         style="width:100px;height:100px;border-radius:50%;background:#f1f5f9;font-size:2rem;font-weight:700;">
+                        <span id="quizScore">0/5</span>
+                    </div>
+                    <h5 class="fw-bold" id="quizResultTitle">Great Job!</h5>
+                    <p class="text-muted mb-3" id="quizResultMsg">You answered 0 correctly.</p>
+                    <button class="btn btn-outline-primary rounded-pill px-4 me-2" onclick="closeQuiz()">
+                        <i class="fas fa-times me-1"></i> Close
+                    </button>
+                    <button class="btn btn-dark rounded-pill px-4" onclick="startQuiz()">
+                        <i class="fas fa-redo me-1"></i> Try Again
+                    </button>
+                </div>
+
+                <div id="quizLoader" class="d-none text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p class="text-muted">Generating quiz questions...</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 let player;
 let currentTopicId = null;
@@ -337,6 +456,9 @@ function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED && currentTopicId) {
         logWatch(currentTopicId, courseId);
         markWatched(currentTopicId);
+        document.getElementById('quizBtn').classList.remove('d-none');
+    } else if (event.data === YT.PlayerState.PLAYING) {
+        document.getElementById('quizBtn').classList.add('d-none');
     }
 }
 
@@ -346,6 +468,143 @@ function logWatch(topicId, courseId) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'topic_id=' + topicId + '&course_id=' + courseId
     });
+}
+
+let quizQuestions = [];
+let quizIndex = 0;
+let quizScore = 0;
+
+function openQuiz() {
+    if (quizQuestions.length === 0) {
+        startQuiz();
+    } else {
+        const modal = new bootstrap.Modal(document.getElementById('quizModal'));
+        modal.show();
+    }
+}
+
+function startQuiz() {
+    document.getElementById('quizQuestionArea').classList.add('d-none');
+    document.getElementById('quizResultArea').classList.add('d-none');
+    document.getElementById('quizLoader').classList.remove('d-none');
+
+    const topicItem = document.querySelector(`.play-video[data-topic-id="${currentTopicId}"]`);
+    const topicTitle = topicItem ? topicItem.getAttribute('data-title') : 'this topic';
+    document.getElementById('quizTopicLabel').textContent = 'Quiz: ' + topicTitle;
+
+    fetch('../chatbot/quiz.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic_id: currentTopicId, course_id: courseId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('quizLoader').classList.add('d-none');
+
+        if (!data.success || !data.quiz || !data.quiz.questions) {
+            alert('Failed to generate quiz. Please try again.');
+            return;
+        }
+
+        quizQuestions = data.quiz.questions;
+        quizIndex = 0;
+        quizScore = 0;
+        showQuestion();
+
+        const modal = new bootstrap.Modal(document.getElementById('quizModal'));
+        modal.show();
+    })
+    .catch(() => {
+        document.getElementById('quizLoader').classList.add('d-none');
+        alert('Network error. Please try again.');
+    });
+}
+
+function showQuestion() {
+    if (quizIndex >= quizQuestions.length) {
+        showResult();
+        return;
+    }
+
+    const q = quizQuestions[quizIndex];
+    document.getElementById('quizQuestionArea').classList.remove('d-none');
+    document.getElementById('quizResultArea').classList.add('d-none');
+    document.getElementById('quizCounter').textContent = 'Question ' + (quizIndex + 1) + ' of ' + quizQuestions.length;
+    document.getElementById('quizQuestion').textContent = q.question;
+    document.getElementById('quizProgress').style.width = ((quizIndex / quizQuestions.length) * 100) + '%';
+
+    const container = document.getElementById('quizOptions');
+    container.innerHTML = '';
+
+    const explanationDiv = document.createElement('div');
+    explanationDiv.id = 'quizExplanation';
+    explanationDiv.className = 'd-none small text-muted mt-2 p-2 rounded';
+    container.appendChild(explanationDiv);
+
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = opt;
+        btn.onclick = function() {
+            if (container.querySelector('.correct') || container.querySelector('.wrong')) return;
+
+            document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+            this.classList.add('selected');
+
+            const correctBtns = document.querySelectorAll('.quiz-option');
+            correctBtns[q.correct].classList.add('correct');
+
+            if (i === q.correct) {
+                quizScore++;
+            } else {
+                this.classList.add('wrong');
+                this.classList.remove('selected');
+            }
+
+            if (q.explanation) {
+                explanationDiv.textContent = '💡 ' + q.explanation;
+                explanationDiv.className = 'small mt-2 p-2 rounded bg-info bg-opacity-10 text-muted';
+            }
+
+            setTimeout(() => {
+                quizIndex++;
+                showQuestion();
+            }, 2000);
+        };
+        container.appendChild(btn);
+    });
+}
+
+function showResult() {
+    document.getElementById('quizQuestionArea').classList.add('d-none');
+    document.getElementById('quizResultArea').classList.remove('d-none');
+    document.getElementById('quizProgress').style.width = '100%';
+    document.getElementById('quizScore').textContent = quizScore + '/' + quizQuestions.length;
+
+    const scoreCircle = document.getElementById('quizScoreCircle');
+    const pct = quizScore / quizQuestions.length;
+
+    if (pct >= 0.8) {
+        scoreCircle.style.background = '#dcfce7';
+        scoreCircle.style.color = '#15803d';
+        document.getElementById('quizResultTitle').textContent = 'Excellent! 🌟';
+        document.getElementById('quizResultMsg').textContent = 'You answered ' + quizScore + ' of ' + quizQuestions.length + ' correctly!';
+    } else if (pct >= 0.5) {
+        scoreCircle.style.background = '#fef9c3';
+        scoreCircle.style.color = '#a16207';
+        document.getElementById('quizResultTitle').textContent = 'Good Job! 👍';
+        document.getElementById('quizResultMsg').textContent = 'You answered ' + quizScore + ' of ' + quizQuestions.length + ' correctly.';
+    } else {
+        scoreCircle.style.background = '#fee2e2';
+        scoreCircle.style.color = '#b91c1c';
+        document.getElementById('quizResultTitle').textContent = 'Keep Learning! 📖';
+        document.getElementById('quizResultMsg').textContent = 'You answered ' + quizScore + ' of ' + quizQuestions.length + ' correctly. Review the topic and try again.';
+    }
+}
+
+function closeQuiz() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('quizModal'));
+    if (modal) modal.hide();
 }
 
 document.addEventListener('DOMContentLoaded', function() {

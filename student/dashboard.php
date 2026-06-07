@@ -25,6 +25,21 @@ $enrolled_count = total_course_enrolled($conn, $user_id);
 $active_courses = array_filter($courses, fn($c) => $c['isEnrolled'] === 'success');
 $pending_courses = array_filter($courses, fn($c) => $c['isEnrolled'] === 'pending');
 
+function time_ago($datetime)
+{
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    if ($diff->y > 0) return $diff->y . 'y ago';
+    if ($diff->m > 0) return $diff->m . 'mo ago';
+    if ($diff->d > 6) return floor($diff->d / 7) . 'w ago';
+    if ($diff->d > 0) return $diff->d . 'd ago';
+    if ($diff->h > 0) return $diff->h . 'h ago';
+    if ($diff->i > 0) return $diff->i . 'm ago';
+    return 'Just now';
+}
+
 ob_start();
 ?>
 
@@ -76,16 +91,53 @@ ob_start();
     background: linear-gradient(90deg, #e11d48, #f43f5e);
     transition: width 0.6s ease;
 }
-.recent-item {
-    transition: all 0.2s ease;
-    cursor: pointer;
+.recent-card {
+    transition: all 0.25s ease;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 14px;
     background: #fff;
+    overflow: hidden;
 }
-.recent-item:hover {
+.recent-card:hover {
     border-color: #e11d48;
-    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.1);
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.1);
+    transform: translateY(-2px);
+}
+.recent-thumb {
+    width: 110px;
+    min-height: 80px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.recent-resume-btn {
+    white-space: nowrap;
+    border-radius: 8px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #1e293b;
+    transition: all 0.2s ease;
+}
+.recent-resume-btn:hover {
+    background: #e11d48;
+    color: #fff;
+}
+.recent-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+@media (max-width: 575px) {
+    .recent-thumb {
+        width: 80px;
+        min-height: 60px;
+    }
+    .recent-card-body {
+        padding: 0.6rem !important;
+    }
 }
 .section-title {
     font-weight: 700;
@@ -254,15 +306,29 @@ ob_start();
                 <h5 class="section-title mb-3"><i class="bi bi-clock-history me-2"></i>Recently Watched</h5>
                 <div class="row g-3">
                     <?php foreach ($recently_watched as $item): ?>
-                    <div class="col-6 col-md">
+                    <div class="col-12 col-md-6">
                         <a href="watch_course.php?course_id=<?= $item['course_id'] ?>" class="text-decoration-none">
-                            <div class="recent-item p-3 text-center">
-                                <div class="rounded-3 overflow-hidden mb-2" style="height:70px;">
-                                    <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
-                                         alt="" class="w-100 h-100" style="object-fit:cover;">
+                            <div class="recent-card d-flex align-items-stretch">
+                                <img src="../uploads/img/thumbnails/<?= htmlspecialchars($item['thumbnail']) ?>"
+                                     alt="" class="recent-thumb">
+                                <div class="recent-card-body d-flex flex-column justify-content-center p-3 w-100">
+                                    <div class="d-flex align-items-start justify-content-between gap-2">
+                                        <div class="min-width-0">
+                                            <h6 class="fw-bold text-dark mb-1 text-truncate" style="font-size:0.95rem;">
+                                                <?= htmlspecialchars($item['topic_title']) ?>
+                                            </h6>
+                                            <small class="text-muted text-truncate d-block">
+                                                <?= htmlspecialchars($item['course_title']) ?>
+                                            </small>
+                                        </div>
+                                        <span class="recent-resume-btn text-decoration-none flex-shrink-0">
+                                            <i class="fas fa-play me-1"></i> Resume
+                                        </span>
+                                    </div>
+                                    <span class="recent-time mt-1">
+                                        <i class="far fa-clock"></i> <?= time_ago($item['watched_at']) ?>
+                                    </span>
                                 </div>
-                                <h6 class="small fw-bold text-dark mb-1 text-truncate"><?= htmlspecialchars($item['topic_title']) ?></h6>
-                                <small class="text-muted"><?= htmlspecialchars($item['course_title']) ?></small>
                             </div>
                         </a>
                     </div>

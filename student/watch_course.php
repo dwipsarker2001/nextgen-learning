@@ -21,6 +21,20 @@ $course_lectures = get_course_lectures($conn, $course_id);
     Page configuration
 ---------------------------------------------*/
 $page_title = "Learning Room | Nextgen Learning";
+
+$watched_topic_ids = [];
+if ($user_id) {
+    $stmt_w = $conn->prepare("SELECT DISTINCT topic_id FROM watched_topics WHERE user_id = ? AND course_id = ?");
+    $stmt_w->bind_param("ii", $user_id, $course_id);
+    $stmt_w->execute();
+    $result_w = $stmt_w->get_result();
+    while ($row_w = $result_w->fetch_assoc()) {
+        $watched_topic_ids[] = (int)$row_w['topic_id'];
+    }
+    $stmt_w->close();
+}
+$watched_json = json_encode($watched_topic_ids);
+
 ob_start();
 ?>
 
@@ -51,10 +65,13 @@ ob_start();
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
-    .player-wrapper iframe { 
-        aspect-ratio: 16/9; 
-        width: 100%; 
-        display: block; 
+    .player-wrapper > div {
+        aspect-ratio: 16/9;
+        width: 100%;
+    }
+    .player-wrapper iframe {
+        width: 100%;
+        height: 100%;
     }
 
     .video-title-section {
@@ -209,7 +226,7 @@ ob_start();
             
             <div class="col-lg-8">
                 <div class="player-wrapper">
-                    <iframe id="videoPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <div id="videoPlayer"></div>
                 </div>
                 
                 <div class="video-title-section">
@@ -247,7 +264,8 @@ ob_start();
                                         <div class="lecture-item play-video" 
                                              data-video-id="<?php echo htmlspecialchars($videoId); ?>" 
                                              data-title="<?php echo htmlspecialchars($lesson['title']); ?>"
-                                             data-topic-id="<?php echo (int)$lesson['id']; ?>">
+                                             data-topic-id="<?php echo (int)$lesson['id']; ?>"
+                                             data-watched="<?php echo in_array((int)$lesson['id'], $watched_topic_ids) ? '1' : '0'; ?>">
                                             
                                             <div class="play-icon-box">
                                                 <i class="fas fa-play"></i>
@@ -257,6 +275,10 @@ ob_start();
                                                 <h6><?php echo htmlspecialchars($lesson['title']); ?></h6>
                                                 <p><i class="far fa-clock me-1"></i><?php echo htmlspecialchars($lesson['duration']); ?></p>
                                             </div>
+
+                                            <?php if (in_array((int)$lesson['id'], $watched_topic_ids)): ?>
+                                                <i class="fas fa-check-circle text-success ms-auto" style="font-size:1.1rem;"></i>
+                                            <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -275,59 +297,85 @@ ob_start();
 </main>
 
 <script>
+let player;
+let currentTopicId = null;
+const courseId = <?= (int)$course_id ?>;
+const watchedTopics = <?= $watched_json ?>;
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('videoPlayer', {
+        height: '100%',
+        width: '100%',
+        videoId: '',
+        playerVars: { rel: 0, autoplay: 1 },
+        events: { 'onStateChange': onPlayerStateChange }
+    });
+}
+
+function markWatched(topicId) {
+    if (!topicId || watchedTopics.includes(topicId)) return;
+    watchedTopics.push(topicId);
+
+    const item = document.querySelector(`.play-video[data-topic-id="${topicId}"]`);
+    if (item) {
+        item.setAttribute('data-watched', '1');
+        if (!item.querySelector('.fa-check-circle')) {
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-check-circle text-success ms-auto';
+            icon.style.fontSize = '1.1rem';
+            item.appendChild(icon);
+        }
+    }
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED && currentTopicId) {
+        logWatch(currentTopicId, courseId);
+        markWatched(currentTopicId);
+    }
+}
+
+function logWatch(topicId, courseId) {
+    fetch('../includes/log_watch.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'topic_id=' + topicId + '&course_id=' + courseId
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const videoPlayer = document.getElementById('videoPlayer');
     const titleDisplay = document.getElementById('currentVideoTitle');
     const playItems = document.querySelectorAll('.play-video');
-    
+
     function loadVideo(element) {
         const videoId = element.getAttribute('data-video-id');
         const title = element.getAttribute('data-title');
-        
-        if (videoId) {
-            videoPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+        const topicId = element.getAttribute('data-topic-id');
+
+        if (videoId && player && player.loadVideoById) {
+            player.loadVideoById(videoId);
             titleDisplay.innerText = title;
-            
+            currentTopicId = topicId ? parseInt(topicId) : null;
+
             playItems.forEach(item => item.classList.remove('active'));
             element.classList.add('active');
-            
+
             if (window.innerWidth < 992) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
     }
 
-    if (playItems.length > 0) loadVideo(playItems[0]);
+    if (playItems.length > 0) {
+        setTimeout(() => loadVideo(playItems[0]), 500);
+    }
 
     playItems.forEach(item => {
         item.addEventListener('click', function() { loadVideo(this); });
     });
-
-    function logWatch(topicId, courseId) {
-        fetch('../includes/log_watch.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'topic_id=' + topicId + '&course_id=' + courseId
-        });
-    }
-
-    let currentTopicId = null;
-    let watchTimer = null;
-
-    playItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const topicId = this.getAttribute('data-topic-id');
-            if (topicId) {
-                currentTopicId = topicId;
-                clearTimeout(watchTimer);
-                watchTimer = setTimeout(() => {
-                    logWatch(topicId, <?= (int)$course_id ?>);
-                }, 30000);
-            }
-        });
-    });
 });
 </script>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <link rel="stylesheet" href="../chatbot/assets/home-widget.css">
 

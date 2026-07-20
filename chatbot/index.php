@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Groq AI Course Chatbot | nextgen-learning';
+$pageTitle = 'NextGen Course Chatbot | nextgen-learning';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,13 +14,13 @@ $pageTitle = 'Groq AI Course Chatbot | nextgen-learning';
 
 <body>
     <main class="chatbot-shell">
-        <section class="chatbot-panel" aria-label="Groq AI Course Chatbot">
+        <section class="chatbot-panel" aria-label="NextGen Course Chatbot">
             <header class="chatbot-header">
                 <a class="chatbot-back" href="../index.php" aria-label="Back to home">
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <div>
-                    <h1>Groq AI Course Chatbot</h1>
+                    <h1>NextGen Course Chatbot</h1>
                     <p>Ask questions about available course content.</p>
                 </div>
             </header>

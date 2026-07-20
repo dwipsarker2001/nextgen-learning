@@ -3,15 +3,18 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
     http_response_code(404);
     exit;
 }
-?>
-<link rel="stylesheet" href="chatbot/assets/home-widget.css">
 
-<div class="ng-chat-widget" id="ngChatWidget">
+// Pages nested under admin/ or student/ set $ngChatBasePath = '../' before including this file.
+$ngChatBasePath = $ngChatBasePath ?? '';
+?>
+<link rel="stylesheet" href="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.css">
+
+<div class="ng-chat-widget" id="ngChatWidget" data-base="<?= htmlspecialchars($ngChatBasePath) ?>">
     <button class="ng-chat-toggle" id="ngChatToggle" type="button" aria-label="Open course chatbot">
         <i class="bi bi-chat-dots-fill"></i>
     </button>
 
-    <section class="ng-chat-window" style="padding: 0;" id="ngChatWindow" aria-label="Groq AI Course Chatbot" hidden>
+    <section class="ng-chat-window" style="padding: 0;" id="ngChatWindow" aria-label="NextGen Course Chatbot" hidden>
         <header class="ng-chat-header">
             <div>
                 <h2>Course Chatbot</h2>

@@ -96,6 +96,17 @@ body {
     border: 1px solid #e5e7eb;
 }
 
+.bubble.loading-bubble {
+    color: #64748b;
+    font-style: italic;
+    animation: chatbot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes chatbot-pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
 .chat-message.user .bubble {
     background: #2563eb;
     color: #ffffff;

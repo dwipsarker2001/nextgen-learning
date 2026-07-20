@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
 require_once __DIR__ . '/groq_client.php';
 
@@ -29,13 +30,24 @@ try {
         exit;
     }
 
+    // Greetings and chit-chat get an instant canned reply instead of a course-database lookup.
+    $smalltalkType = chatbot_detect_smalltalk($question);
+    if ($smalltalkType !== null) {
+        echo json_encode([
+            'success' => true,
+            'answer' => chatbot_smalltalk_reply($smalltalkType),
+            'sources_count' => 0,
+        ]);
+        exit;
+    }
+
     $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
     $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars']);
 
     if ($context === '') {
         echo json_encode([
             'success' => true,
-            'answer' => 'I could not find relevant course content in the database for that question.',
+            'answer' => "I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.",
             'sources_count' => 0,
         ]);
         exit;
@@ -49,7 +61,7 @@ try {
         'sources_count' => count($rows),
     ]);
 } catch (Throwable $e) {
-    error_log('[Groq Course Chatbot] ' . $e->getMessage());
+    error_log('[NextGen Course Chatbot] ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,

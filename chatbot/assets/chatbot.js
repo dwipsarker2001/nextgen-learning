@@ -3,6 +3,8 @@
     const input = document.getElementById('chatInput');
     const messages = document.getElementById('chatMessages');
 
+    const loadingPhrases = ['Thinking...', 'Checking course details...', 'Looking that up...', 'Almost there...'];
+
     function addMessage(text, type) {
         const row = document.createElement('div');
         row.className = 'chat-message ' + type;
@@ -24,6 +26,87 @@
         input.disabled = isLoading;
     }
 
+    function startLoadingMessage() {
+        const row = addMessage(loadingPhrases[0], 'bot');
+        const bubble = row.querySelector('.bubble');
+        bubble.classList.add('loading-bubble');
+
+        let phraseIndex = 0;
+        const timer = setInterval(function () {
+            phraseIndex = (phraseIndex + 1) % loadingPhrases.length;
+            bubble.textContent = loadingPhrases[phraseIndex];
+            messages.scrollTop = messages.scrollHeight;
+        }, 1500);
+
+        return {
+            row: row,
+            stop: function () {
+                clearInterval(timer);
+            },
+        };
+    }
+
+    // Reads the chatbot/stream.php SSE response and calls onDelta as each token chunk
+    // arrives, so the answer can be typed into the page as Groq generates it.
+    async function streamAnswer(message, onDelta) {
+        const response = await fetch('stream.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'text/event-stream',
+            },
+            body: JSON.stringify({ message: message }),
+        });
+
+        if (!response.ok || !response.body) {
+            throw new Error('stream_unavailable');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let errorMessage = null;
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+
+            let boundary;
+            while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+                const rawEvent = buffer.slice(0, boundary);
+                buffer = buffer.slice(boundary + 2);
+
+                if (!rawEvent.startsWith('data: ')) {
+                    continue;
+                }
+
+                const raw = rawEvent.slice(6).trim();
+                if (raw === '[DONE]') {
+                    return errorMessage;
+                }
+
+                let parsed;
+                try {
+                    parsed = JSON.parse(raw);
+                } catch (parseError) {
+                    continue;
+                }
+
+                if (parsed.error) {
+                    errorMessage = parsed.error;
+                } else if (parsed.delta) {
+                    onDelta(parsed.delta);
+                }
+            }
+        }
+
+        return errorMessage;
+    }
+
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
@@ -36,29 +119,31 @@
         input.value = '';
         setLoading(true);
 
-        const loadingRow = addMessage('Thinking...', 'bot');
+        const loading = startLoadingMessage();
+        let answerBubble = null;
 
         try {
-            const response = await fetch('api.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ message: message }),
+            const errorMessage = await streamAnswer(message, function (delta) {
+                if (!answerBubble) {
+                    loading.stop();
+                    loading.row.remove();
+                    answerBubble = addMessage('', 'bot').querySelector('.bubble');
+                }
+
+                answerBubble.textContent += delta;
+                messages.scrollTop = messages.scrollHeight;
             });
 
-            const data = await response.json();
-            loadingRow.remove();
-
-            if (!response.ok || !data.success) {
-                addMessage(data.message || 'The chatbot could not answer right now.', 'bot');
-                return;
+            if (!answerBubble) {
+                loading.stop();
+                loading.row.remove();
+                addMessage(errorMessage || 'The chatbot could not answer right now.', 'bot');
+            } else if (errorMessage) {
+                addMessage(errorMessage, 'bot');
             }
-
-            addMessage(data.answer, 'bot');
         } catch (error) {
-            loadingRow.remove();
+            loading.stop();
+            loading.row.remove();
             addMessage('The chatbot could not connect to the server. Please try again.', 'bot');
         } finally {
             setLoading(false);

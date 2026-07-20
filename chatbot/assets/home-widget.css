@@ -116,6 +116,17 @@
     border: 1px solid #e5e7eb;
 }
 
+.ng-chat-bubble.loading-bubble {
+    color: #64748b;
+    font-style: italic;
+    animation: ng-chat-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ng-chat-pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
 .ng-chat-message.user .ng-chat-bubble {
     background: #2563eb;
     color: #ffffff;

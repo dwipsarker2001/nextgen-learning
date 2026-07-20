@@ -120,7 +120,15 @@ function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseI
     $params[] = $maxRows;
     $types = str_repeat('s', count($params) - 1 - ($courseId ? 1 : 0)) . ($courseId ? 'i' : '') . 'i';
 
-    return chatbot_run_course_query($conn, $sql, $types, $params);
+    $rows = chatbot_run_course_query($conn, $sql, $types, $params);
+
+    // Keywords like "list" or "details" don't match any column but still describe
+    // a real request, so fall back to a general overview instead of an empty answer.
+    if (empty($rows)) {
+        return chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId);
+    }
+
+    return $rows;
 }
 
 function chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId = null)

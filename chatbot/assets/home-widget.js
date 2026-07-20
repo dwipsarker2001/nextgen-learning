@@ -1,4 +1,5 @@
 (function () {
+    const widget = document.getElementById('ngChatWidget');
     const toggle = document.getElementById('ngChatToggle');
     const close = document.getElementById('ngChatClose');
     const windowEl = document.getElementById('ngChatWindow');
@@ -6,9 +7,13 @@
     const input = document.getElementById('ngChatInput');
     const messages = document.getElementById('ngChatMessages');
 
-    if (!toggle || !close || !windowEl || !form || !input || !messages) {
+    if (!widget || !toggle || !close || !windowEl || !form || !input || !messages) {
         return;
     }
+
+    // Admin/student pages live one directory below the site root, so widget.php
+    // stamps how far up to go here (see $ngChatBasePath).
+    const basePath = widget.dataset.base || '';
 
     const loadingPhrases = ['Thinking...', 'Checking course details...', 'Looking that up...', 'Almost there...'];
 
@@ -55,7 +60,7 @@
     // Reads the chatbot/stream.php SSE response and calls onDelta as each token chunk
     // arrives, so the answer can be typed into the page as Groq generates it.
     async function streamAnswer(message, onDelta) {
-        const response = await fetch('chatbot/stream.php', {
+        const response = await fetch(basePath + 'chatbot/stream.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

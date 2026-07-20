@@ -221,6 +221,8 @@ $user = get_user($conn, $user_id);
     <!-- Template Functions -->
     <script src="../assets/js/functions.js"></script>
 
+    <?php $ngChatBasePath = '../'; include '../chatbot/widget.php'; ?>
+
 </body>
 
 </html>

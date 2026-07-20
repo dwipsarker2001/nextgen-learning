@@ -43,4 +43,4 @@ $ngChatBasePath = $ngChatBasePath ?? '';
     </section>
 </div>
 
-<script src="chatbot/assets/home-widget.js"></script>
+<script src="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.js"></script>

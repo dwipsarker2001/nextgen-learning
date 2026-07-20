@@ -238,6 +238,8 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['user_role'])) {
     <script src="assets/js/pass_show_hide.js"></script>
     <script src="assets/js/functions.js"></script>
 
+    <?php include 'chatbot/widget.php'; ?>
+
 </body>
 
 </html>

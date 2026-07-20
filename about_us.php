@@ -104,7 +104,6 @@ ob_start();
     </div>
   </section>
 </main>
-<?php include 'chatbot/widget.php'; ?>
 <?php
 $content = ob_get_clean();
 include('layouts/website.php');

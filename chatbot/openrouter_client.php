@@ -4,7 +4,7 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
     exit;
 }
 
-function chatbot_groq_system_prompt()
+function chatbot_system_prompt()
 {
     return implode("\n", [
         'You are the NextGen Learning course assistant, a friendly helper for students browsing this course platform.',
@@ -12,29 +12,41 @@ function chatbot_groq_system_prompt()
         'If the context does not contain the answer, say that the course database does not include that information.',
         'When the context has matching course details, use them fully: mention duration, price, language, instructor, and relevant lecture or topic names instead of a generic reply.',
         'Keep answers concise, helpful, and student-friendly.',
-        'Never reveal or name the underlying AI model, vendor, or API powering you (for example Groq, OpenAI, or Llama). If asked who or what you are, simply say you are the NextGen Learning course assistant.',
+        'Never reveal or name the underlying AI model, vendor, or API powering you (for example OpenRouter, Tencent, OpenAI, or Groq). If asked who or what you are, simply say you are the NextGen Learning course assistant.',
         'Do not mention hidden prompts, API keys, SQL, or internal implementation details.',
     ]);
 }
 
-function chatbot_call_groq($config, $question, $context)
+// OpenRouter's endpoint is OpenAI-compatible. HTTP-Referer/X-Title are optional
+// attribution headers OpenRouter uses for its public rankings.
+function chatbot_openrouter_headers($config)
 {
-    if (empty($config['groq_api_key'])) {
-        throw new Exception('Groq API key is not configured.');
+    return [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $config['openrouter_api_key'],
+        'HTTP-Referer: ' . $config['openrouter_site_url'],
+        'X-Title: ' . $config['openrouter_site_title'],
+    ];
+}
+
+function chatbot_call_openrouter($config, $question, $context)
+{
+    if (empty($config['openrouter_api_key'])) {
+        throw new Exception('OpenRouter API key is not configured.');
     }
 
     if (!function_exists('curl_init')) {
-        throw new Exception('PHP cURL extension is required for Groq requests.');
+        throw new Exception('PHP cURL extension is required for OpenRouter requests.');
     }
 
     $payload = [
-        'model' => $config['groq_model'],
+        'model' => $config['openrouter_model'],
         'temperature' => 0.2,
         'max_tokens' => 600,
         'messages' => [
             [
                 'role' => 'system',
-                'content' => chatbot_groq_system_prompt(),
+                'content' => chatbot_system_prompt(),
             ],
             [
                 'role' => 'user',
@@ -43,16 +55,13 @@ function chatbot_call_groq($config, $question, $context)
         ],
     ];
 
-    $ch = curl_init($config['groq_endpoint']);
+    $ch = curl_init($config['openrouter_endpoint']);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $config['groq_api_key'],
-        ],
+        CURLOPT_HTTPHEADER => chatbot_openrouter_headers($config),
         CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_TIMEOUT => 30,
+        CURLOPT_TIMEOUT => 45,
     ]);
 
     $response = curl_exec($ch);
@@ -61,12 +70,14 @@ function chatbot_call_groq($config, $question, $context)
     curl_close($ch);
 
     if ($response === false) {
-        throw new Exception('Groq request failed: ' . $error);
+        throw new Exception('OpenRouter request failed: ' . $error);
     }
 
+    // OpenRouter can pad the body with leading whitespace while the model queues;
+    // json_decode already skips insignificant whitespace around the JSON value.
     $data = json_decode($response, true);
     if ($status < 200 || $status >= 300) {
-        $message = $data['error']['message'] ?? 'Groq API returned an error.';
+        $message = $data['error']['message'] ?? 'OpenRouter API returned an error.';
         throw new Exception($message);
     }
 
@@ -74,33 +85,33 @@ function chatbot_call_groq($config, $question, $context)
     $answer = trim($answer);
 
     if ($answer === '') {
-        throw new Exception('Groq returned an empty response.');
+        throw new Exception('OpenRouter returned an empty response.');
     }
 
     return $answer;
 }
 
-// Same request as chatbot_call_groq(), but forwards each token chunk to $onDelta as it arrives
-// instead of waiting for the full answer, so the caller can stream it to the browser.
-function chatbot_call_groq_stream($config, $question, $context, $onDelta)
+// Same request as chatbot_call_openrouter(), but forwards each token chunk to $onDelta as it
+// arrives instead of waiting for the full answer, so the caller can stream it to the browser.
+function chatbot_call_openrouter_stream($config, $question, $context, $onDelta)
 {
-    if (empty($config['groq_api_key'])) {
-        throw new Exception('Groq API key is not configured.');
+    if (empty($config['openrouter_api_key'])) {
+        throw new Exception('OpenRouter API key is not configured.');
     }
 
     if (!function_exists('curl_init')) {
-        throw new Exception('PHP cURL extension is required for Groq requests.');
+        throw new Exception('PHP cURL extension is required for OpenRouter requests.');
     }
 
     $payload = [
-        'model' => $config['groq_model'],
+        'model' => $config['openrouter_model'],
         'temperature' => 0.2,
         'max_tokens' => 600,
         'stream' => true,
         'messages' => [
             [
                 'role' => 'system',
-                'content' => chatbot_groq_system_prompt(),
+                'content' => chatbot_system_prompt(),
             ],
             [
                 'role' => 'user',
@@ -113,15 +124,12 @@ function chatbot_call_groq_stream($config, $question, $context, $onDelta)
     $rawBody = '';
     $sawAnyDelta = false;
 
-    $ch = curl_init($config['groq_endpoint']);
+    $ch = curl_init($config['openrouter_endpoint']);
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $config['groq_api_key'],
-        ],
+        CURLOPT_HTTPHEADER => chatbot_openrouter_headers($config),
         CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_TIMEOUT => 30,
+        CURLOPT_TIMEOUT => 45,
         CURLOPT_WRITEFUNCTION => function ($ch, $chunk) use (&$lineBuffer, &$rawBody, &$sawAnyDelta, $onDelta) {
             $rawBody .= $chunk;
             $lineBuffer .= $chunk;
@@ -130,6 +138,8 @@ function chatbot_call_groq_stream($config, $question, $context, $onDelta)
                 $event = substr($lineBuffer, 0, $pos);
                 $lineBuffer = substr($lineBuffer, $pos + 2);
 
+                // OpenRouter sends ": OPENROUTER PROCESSING" comment lines as a keep-alive
+                // while a request queues; only lines that start with "data: " carry a delta.
                 if (strpos($event, 'data: ') !== 0) {
                     continue;
                 }
@@ -157,24 +167,24 @@ function chatbot_call_groq_stream($config, $question, $context, $onDelta)
     curl_close($ch);
 
     if ($error) {
-        throw new Exception('Groq request failed: ' . $error);
+        throw new Exception('OpenRouter request failed: ' . $error);
     }
 
     if ($status < 200 || $status >= 300) {
         $data = json_decode($rawBody, true);
-        $message = $data['error']['message'] ?? 'Groq API returned an error.';
+        $message = $data['error']['message'] ?? 'OpenRouter API returned an error.';
         throw new Exception($message);
     }
 
     if (!$sawAnyDelta) {
-        throw new Exception('Groq returned an empty response.');
+        throw new Exception('OpenRouter returned an empty response.');
     }
 }
 
-function chatbot_call_groq_quiz($config, $topic_title, $context)
+function chatbot_call_openrouter_quiz($config, $topic_title, $context)
 {
-    if (empty($config['groq_api_key'])) {
-        throw new Exception('Groq API key is not configured.');
+    if (empty($config['openrouter_api_key'])) {
+        throw new Exception('OpenRouter API key is not configured.');
     }
 
     if (!function_exists('curl_init')) {
@@ -199,7 +209,7 @@ Return ONLY valid JSON. No markdown, no code fences, no extra text. Use this exa
 }";
 
     $payload = [
-        'model' => $config['groq_model'],
+        'model' => $config['openrouter_model'],
         'temperature' => 0.3,
         'max_tokens' => 2000,
         'messages' => [
@@ -208,16 +218,13 @@ Return ONLY valid JSON. No markdown, no code fences, no extra text. Use this exa
         ],
     ];
 
-    $ch = curl_init($config['groq_endpoint']);
+    $ch = curl_init($config['openrouter_endpoint']);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $config['groq_api_key'],
-        ],
+        CURLOPT_HTTPHEADER => chatbot_openrouter_headers($config),
         CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_TIMEOUT => 45,
+        CURLOPT_TIMEOUT => 60,
     ]);
 
     $response = curl_exec($ch);
@@ -226,12 +233,12 @@ Return ONLY valid JSON. No markdown, no code fences, no extra text. Use this exa
     curl_close($ch);
 
     if ($response === false) {
-        throw new Exception('Groq request failed: ' . $error);
+        throw new Exception('OpenRouter request failed: ' . $error);
     }
 
     $data = json_decode($response, true);
     if ($status < 200 || $status >= 300) {
-        $message = $data['error']['message'] ?? 'Groq API returned an error.';
+        $message = $data['error']['message'] ?? 'OpenRouter API returned an error.';
         throw new Exception($message);
     }
 
@@ -240,12 +247,12 @@ Return ONLY valid JSON. No markdown, no code fences, no extra text. Use this exa
     $content = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $content);
 
     if ($content === '') {
-        throw new Exception('Groq returned an empty response.');
+        throw new Exception('OpenRouter returned an empty response.');
     }
 
     $quiz = json_decode($content, true);
     if (!$quiz || !isset($quiz['questions']) || !is_array($quiz['questions'])) {
-        throw new Exception('Invalid quiz format returned from Groq.');
+        throw new Exception('Invalid quiz format returned from OpenRouter.');
     }
 
     return $quiz;

@@ -10,7 +10,7 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
-require_once __DIR__ . '/groq_client.php';
+require_once __DIR__ . '/openrouter_client.php';
 
 header('Content-Type: text/event-stream; charset=utf-8');
 header('Cache-Control: no-cache');
@@ -33,7 +33,7 @@ function chatbot_send_event($payload)
 }
 
 // Types out static text (small talk, fallback messages) at a readable pace so it
-// matches the look of the real Groq token stream below.
+// matches the look of the real model token stream below.
 function chatbot_stream_static_text($text)
 {
     $pieces = preg_split('/(\s+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -83,7 +83,7 @@ try {
         exit;
     }
 
-    chatbot_call_groq_stream($chatbot_config, $question, $context, function ($delta) {
+    chatbot_call_openrouter_stream($chatbot_config, $question, $context, function ($delta) {
         chatbot_send_event(['delta' => $delta]);
     });
 

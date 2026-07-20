@@ -13,7 +13,11 @@
       "Bash(node \"C:/Users/AIHEAL~1/AppData/Local/Temp/claude/c--xampp-htdocs-nextgen-learning/41b36440-9b16-463d-b4d1-9e4844e16740/scratchpad/test_stream_client.mjs\" \"how are you\" \"http://localhost/nextgen-learning/chatbot/stream.php\")",
       "Bash(node \"C:/Users/AIHEAL~1/AppData/Local/Temp/claude/c--xampp-htdocs-nextgen-learning/41b36440-9b16-463d-b4d1-9e4844e16740/scratchpad/test_stream_client.mjs\" \"tell me about your course list\" \"http://localhost/nextgen-learning/chatbot/stream.php\")",
       "Bash(node \"C:/Users/AIHEAL~1/AppData/Local/Temp/claude/c--xampp-htdocs-nextgen-learning/41b36440-9b16-463d-b4d1-9e4844e16740/scratchpad/test_stream_client.mjs\" \"who are you\" \"http://localhost/nextgen-learning/chatbot/stream.php\")",
-      "Bash(curl -s http://localhost/nextgen-learning/index.php)"
+      "Bash(curl -s http://localhost/nextgen-learning/index.php)",
+      "Bash(git check-ignore *)",
+      "Bash(php -r ' *)",
+      "Bash(php -l openrouter_client.php)",
+      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H 'Content-Type: application/json' -d '{\"message\":\"which courses are free\"}' --max-time 30)"
     ]
   }
 }

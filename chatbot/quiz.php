@@ -11,7 +11,7 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/course_context.php';
-require_once __DIR__ . '/groq_client.php';
+require_once __DIR__ . '/openrouter_client.php';
 
 try {
     $user_id = $_SESSION['user_id'] ?? 0;
@@ -51,7 +51,7 @@ try {
     $rows = chatbot_fetch_relevant_course_rows($conn, $topic_title, 20, $course_id);
     $context = chatbot_build_context($rows, 4000);
 
-    $quiz = chatbot_call_groq_quiz($chatbot_config, $topic_title, $context);
+    $quiz = chatbot_call_openrouter_quiz($chatbot_config, $topic_title, $context);
 
     echo json_encode([
         'success' => true,

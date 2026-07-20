@@ -47,7 +47,7 @@
     }
 
     // Reads the chatbot/stream.php SSE response and calls onDelta as each token chunk
-    // arrives, so the answer can be typed into the page as Groq generates it.
+    // arrives, so the answer can be typed into the page as the model generates it.
     async function streamAnswer(message, onDelta) {
         const response = await fetch('stream.php', {
             method: 'POST',

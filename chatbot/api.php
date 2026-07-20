@@ -11,7 +11,7 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
-require_once __DIR__ . '/groq_client.php';
+require_once __DIR__ . '/openrouter_client.php';
 
 try {
     $rawBody = file_get_contents('php://input');
@@ -53,7 +53,7 @@ try {
         exit;
     }
 
-    $answer = chatbot_call_groq($chatbot_config, $question, $context);
+    $answer = chatbot_call_openrouter($chatbot_config, $question, $context);
 
     echo json_encode([
         'success' => true,

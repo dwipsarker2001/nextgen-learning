@@ -4,6 +4,9 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
     exit;
 }
 
+/**
+ * Load and set environment variables from a .env file if it exists and is readable.
+ */
 function chatbot_load_env_file($path)
 {
     if (!is_readable($path)) {
@@ -37,7 +40,12 @@ chatbot_load_env_file(dirname(__DIR__) . '/.env');
 
 $chatbot_config = [
     'openrouter_api_key' => getenv('OPENROUTER_API_KEY') ?: '',
-    'openrouter_model' => getenv('OPENROUTER_MODEL') ?: 'tencent/hy3:free',
+    'openrouter_model' => getenv('OPENROUTER_MODEL') ?: 'google/gemma-4-26b-a4b-it:free',
+    'openrouter_fallback_models' => [
+        'google/gemma-4-26b-a4b-it:free',
+        'openai/gpt-oss-20b:free',
+        'openrouter/free',
+    ],
     'openrouter_endpoint' => getenv('OPENROUTER_ENDPOINT') ?: 'https://openrouter.ai/api/v1/chat/completions',
     'openrouter_site_url' => getenv('OPENROUTER_SITE_URL') ?: 'http://localhost/nextgen-learning/',
     'openrouter_site_title' => getenv('OPENROUTER_SITE_TITLE') ?: 'NextGen Learning',

@@ -4,6 +4,10 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
     exit;
 }
 
+/**
+ * Sanitize and truncate a user question for safe use in queries.
+ * Strips HTML tags, normalizes whitespace, and respects encoding for truncation.
+ */
 function chatbot_sanitize_question($question, $maxLength)
 {
     $question = is_string($question) ? $question : '';
@@ -18,6 +22,10 @@ function chatbot_sanitize_question($question, $maxLength)
     return substr($question, 0, $maxLength);
 }
 
+/**
+ * Extract meaningful keywords from the question by filtering out stop words.
+ * Returns up to 8 unique keywords for database matching.
+ */
 function chatbot_extract_keywords($question)
 {
     $question = strtolower($question);
@@ -45,6 +53,10 @@ function chatbot_extract_keywords($question)
     return array_keys($keywords);
 }
 
+/**
+ * Fetch course rows matching the user's question keywords from the database.
+ * Falls back to a general overview if no keyword matches are found.
+ */
 function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseId = null)
 {
     $keywords = chatbot_extract_keywords($question);
@@ -131,6 +143,10 @@ function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseI
     return $rows;
 }
 
+/**
+ * Fetch a general course overview ordered by most recently updated.
+ * Used as a fallback when no specific keyword matches are found.
+ */
 function chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId = null)
 {
     $sql = "
@@ -173,6 +189,10 @@ function chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId = null)
     return chatbot_run_course_query($conn, $sql, $types, $params);
 }
 
+/**
+ * Execute a prepared SELECT query with dynamic parameter binding.
+ * Returns the result set as an associative array.
+ */
 function chatbot_run_course_query($conn, $sql, $types, $params)
 {
     $stmt = $conn->prepare($sql);
@@ -194,10 +214,66 @@ function chatbot_run_course_query($conn, $sql, $types, $params)
     return $rows;
 }
 
-function chatbot_build_context($rows, $maxChars)
+/**
+ * Fetch the logged-in student's recent enrollments/purchases (up to 10).
+ * Returns empty array for guests or on query failure.
+ */
+function chatbot_fetch_student_enrollments($conn, $userId)
 {
+    if (!$userId) {
+        return [];
+    }
+
+    $stmt = $conn->prepare("
+        SELECT c.title AS course_title, e.status, e.created_at
+        FROM enrollments e
+        JOIN courses c ON e.course_id = c.id
+        WHERE e.user_id = ?
+        ORDER BY e.created_at DESC
+        LIMIT 10
+    ");
+
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    $stmt->close();
+
+    return $rows;
+}
+
+/**
+ * Build a plain-text context string from course rows and student data.
+ * Includes student account status, enrollments, and structured course details
+ * (title, lectures, topics) truncated to maxChars.
+ */
+function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLoggedIn = false)
+{
+    $lines = [];
+
+    if ($isLoggedIn) {
+        $lines[] = 'Student Account Status: Logged In';
+        if (!empty($studentEnrollments)) {
+            $lines[] = 'Student Enrolled / Purchased Courses:';
+            foreach ($studentEnrollments as $enr) {
+                $lines[] = '- ' . $enr['course_title'] . ' (Status: ' . $enr['status'] . ')';
+            }
+        } else {
+            $lines[] = 'Student Enrolled / Purchased Courses: None (No active enrollments found).';
+        }
+        $lines[] = '';
+    } else {
+        $lines[] = 'Student Account Status: Not Logged In / Guest';
+        $lines[] = '';
+    }
+
     if (empty($rows)) {
-        return '';
+        $context = trim(implode("\n", $lines));
+        return function_exists('mb_substr') ? mb_substr($context, 0, $maxChars) : substr($context, 0, $maxChars);
     }
 
     $courses = [];
@@ -239,12 +315,14 @@ function chatbot_build_context($rows, $maxChars)
         }
     }
 
-    $lines = [];
     foreach ($courses as $course) {
+        $priceRaw = (string) $course['price'];
+        $priceDisplay = ($priceRaw === '0' || strtolower($priceRaw) === 'free' || trim($priceRaw) === '') ? 'Free' : $priceRaw . ' BDT (Tk)';
+
         $lines[] = 'Course: ' . $course['title'];
         $lines[] = 'Summary: ' . $course['short_desc'];
         $lines[] = 'Description: ' . $course['description'];
-        $lines[] = 'Duration: ' . $course['duration'] . '; Language: ' . $course['language'] . '; Price: ' . $course['price'];
+        $lines[] = 'Duration: ' . $course['duration'] . '; Language: ' . $course['language'] . '; Price: ' . $priceDisplay;
         $lines[] = 'Total lectures: ' . $course['total_lectures'] . '; Status: ' . $course['status'] . '; Availability: ' . $course['upcoming'];
         if ($course['instructor'] !== '') {
             $lines[] = 'Instructor: ' . $course['instructor'];
@@ -253,7 +331,9 @@ function chatbot_build_context($rows, $maxChars)
         foreach ($course['lectures'] as $lecture) {
             $lines[] = 'Lecture: ' . $lecture['title'];
             foreach ($lecture['topics'] as $topic) {
-                $lines[] = 'Topic: ' . $topic['title'] . ' (' . $topic['duration'] . ', ' . $topic['price'] . ')';
+                $tPrice = (string) $topic['price'];
+                $tPriceDisplay = ($tPrice === 'free' || $tPrice === '0') ? 'Free' : $tPrice;
+                $lines[] = 'Topic: ' . $topic['title'] . ' (' . $topic['duration'] . ', ' . $tPriceDisplay . ')';
             }
         }
 

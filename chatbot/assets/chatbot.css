@@ -67,15 +67,25 @@ body {
 .chatbot-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 0 20px 20px 20px !important;
+    background: #f8fafc;
     display: flex;
     flex-direction: column;
     gap: 14px;
-    background: #f8fafc;
+}
+
+.chat-message:first-child,
+.chatbot-messages > .chat-message:first-child {
+    margin-top: 20px !important;
 }
 
 .chat-message {
     display: flex;
+    width: 100%;
+}
+
+.chat-message.bot {
+    justify-content: flex-start;
 }
 
 .chat-message.user {
@@ -87,8 +97,58 @@ body {
     padding: 12px 14px;
     border-radius: 8px;
     line-height: 1.5;
-    white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.bubble strong {
+    font-weight: 600;
+}
+
+.bubble ul,
+.bubble ol {
+    margin: 6px 0 6px 18px;
+    padding: 0;
+}
+
+.bubble li {
+    margin-bottom: 3px;
+}
+
+.bubble h2,
+.bubble h3,
+.bubble h4 {
+    margin: 8px 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.bubble code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.bubble pre {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 8px 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 6px 0;
+}
+
+.bubble pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+.bubble a {
+    color: #2563eb;
+    text-decoration: underline;
 }
 
 .chat-message.bot .bubble {

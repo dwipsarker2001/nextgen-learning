@@ -646,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
 
-<link rel="stylesheet" href="../chatbot/assets/home-widget.css">
+<link rel="stylesheet" href="../chatbot/assets/home-widget.css?v=<?= file_exists(__DIR__ . '/../chatbot/assets/home-widget.css') ? filemtime(__DIR__ . '/../chatbot/assets/home-widget.css') : time() ?>">
 
 <div class="ng-chat-widget" id="ngChatWidget">
     <button class="ng-chat-toggle" id="ngChatToggle" type="button" aria-label="Ask about this course">
@@ -666,9 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <div class="ng-chat-messages" id="ngChatMessages" aria-live="polite">
             <div class="ng-chat-message bot">
-                <div class="ng-chat-bubble">
-                    Ask me anything about this course — topics, duration, pricing, or lessons.
-                </div>
+                <div class="ng-chat-bubble">Ask me anything about this course — topics, duration, pricing, or lessons.</div>
             </div>
         </div>
 

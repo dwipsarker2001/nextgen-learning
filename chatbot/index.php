@@ -9,7 +9,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
-    <link rel="stylesheet" href="assets/chatbot.css">
+    <link rel="stylesheet" href="assets/chatbot.css?v=<?= file_exists(__DIR__ . '/assets/chatbot.css') ? filemtime(__DIR__ . '/assets/chatbot.css') : time() ?>">
 </head>
 
 <body>
@@ -27,9 +27,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
 
             <div id="chatMessages" class="chatbot-messages" aria-live="polite">
                 <div class="chat-message bot">
-                    <div class="bubble">
-                        Hi. Ask me about course topics, duration, language, pricing, or what you can learn.
-                    </div>
+                    <div class="bubble">Hi. Ask me about course topics, duration, language, pricing, or what you can learn.</div>
                 </div>
             </div>
 
@@ -43,7 +41,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
         </section>
     </main>
 
-    <script src="assets/chatbot.js"></script>
+    <script src="assets/chatbot.js?v=<?= file_exists(__DIR__ . '/assets/chatbot.js') ? filemtime(__DIR__ . '/assets/chatbot.js') : time() ?>"></script>
 </body>
 
 </html>

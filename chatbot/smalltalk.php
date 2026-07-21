@@ -4,6 +4,9 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
     exit;
 }
 
+/**
+ * Normalize a small-talk question: lowercase, strip non-alphabetic chars, collapse whitespace.
+ */
 function chatbot_normalize_smalltalk($question)
 {
     $question = strtolower($question);
@@ -13,6 +16,10 @@ function chatbot_normalize_smalltalk($question)
     return trim($question);
 }
 
+/**
+ * Detect whether the question is small talk (greeting, wellbeing, thanks, farewell, identity).
+ * Returns the small-talk type string or null.
+ */
 function chatbot_detect_smalltalk($question)
 {
     $normalized = chatbot_normalize_smalltalk($question);
@@ -38,6 +45,9 @@ function chatbot_detect_smalltalk($question)
     return null;
 }
 
+/**
+ * Return a random canned reply for the given small-talk type, or null if unknown.
+ */
 function chatbot_smalltalk_reply($type)
 {
     $replies = [

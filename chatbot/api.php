@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
@@ -23,6 +24,7 @@ try {
 
     $question = chatbot_sanitize_question($payload['message'] ?? '', $chatbot_config['max_question_length']);
     $courseId = isset($payload['course_id']) ? (int) $payload['course_id'] : null;
+    $userId = $_SESSION['user_id'] ?? 0;
 
     if ($question === '') {
         http_response_code(422);
@@ -42,7 +44,8 @@ try {
     }
 
     $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
-    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars']);
+    $enrollments = chatbot_fetch_student_enrollments($conn, $userId);
+    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId));
 
     if ($context === '') {
         echo json_encode([

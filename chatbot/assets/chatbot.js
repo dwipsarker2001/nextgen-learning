@@ -3,15 +3,97 @@
     const input = document.getElementById('chatInput');
     const messages = document.getElementById('chatMessages');
 
-    const loadingPhrases = ['Thinking...', 'Checking course details...', 'Looking that up...', 'Almost there...'];
 
+    /**
+     * Convert Markdown text to safe HTML for chat bubble rendering.
+     */
+    function parseMarkdown(text) {
+        if (!text) return '';
+
+        let html = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // Code blocks
+        html = html.replace(/```([\s\S]*?)```/g, function (m, code) {
+            return '<pre><code>' + code.trim() + '</code></pre>';
+        });
+
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Bold
+        html = html.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__([\s\S]+?)__/g, '<strong>$1</strong>');
+
+        // Italic
+        html = html.replace(/(?<!\*)\*([^\*\n]+?)\*(?!\*)/g, '<em>$1</em>');
+        html = html.replace(/(?<!_)_([^_\n]+?)_(?!_)/g, '<em>$1</em>');
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+        // Headings
+        html = html.replace(/^### (.*$)/gim, '<h4>$1</h4>');
+        html = html.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^# (.*$)/gim, '<h2>$1</h2>');
+
+        // Lists
+        const lines = html.split('\n');
+        let inList = false;
+        let result = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let unorderedMatch = line.match(/^\s*[\-\*]\s+(.*)/);
+            let orderedMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
+
+            if (unorderedMatch) {
+                if (!inList) {
+                    result.push('<ul class="chat-markdown-list">');
+                    inList = 'ul';
+                }
+                result.push('<li>' + unorderedMatch[1] + '</li>');
+            } else if (orderedMatch) {
+                if (!inList) {
+                    result.push('<ol class="chat-markdown-list">');
+                    inList = 'ol';
+                }
+                result.push('<li>' + orderedMatch[2] + '</li>');
+            } else {
+                if (inList) {
+                    result.push('</' + inList + '>');
+                    inList = false;
+                }
+                result.push(line);
+            }
+        }
+        if (inList) {
+            result.push('</' + inList + '>');
+        }
+        html = result.join('\n');
+
+        html = html.replace(/(<\/h[2-4]>|<\/ul>|<\/ol>|<\/pre>)\n/gi, '$1');
+        html = html.replace(/\n/g, '<br>');
+
+        return html;
+    }
+
+    /**
+     * Append a chat message row (user or bot) to the message container and scroll down.
+     */
     function addMessage(text, type) {
         const row = document.createElement('div');
         row.className = 'chat-message ' + type;
 
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-        bubble.textContent = text;
+        if (type === 'bot') {
+            bubble.innerHTML = parseMarkdown(text);
+        } else {
+            bubble.textContent = text;
+        }
 
         row.appendChild(bubble);
         messages.appendChild(row);
@@ -20,34 +102,33 @@
         return row;
     }
 
+    /**
+     * Enable or disable the form inputs during a request.
+     */
     function setLoading(isLoading) {
         const button = form.querySelector('button');
         button.disabled = isLoading;
         input.disabled = isLoading;
     }
 
+    /**
+     * Show a "Typing..." loading indicator in a bot message row.
+     */
     function startLoadingMessage() {
-        const row = addMessage(loadingPhrases[0], 'bot');
+        const row = addMessage('Typing...', 'bot');
         const bubble = row.querySelector('.bubble');
         bubble.classList.add('loading-bubble');
 
-        let phraseIndex = 0;
-        const timer = setInterval(function () {
-            phraseIndex = (phraseIndex + 1) % loadingPhrases.length;
-            bubble.textContent = loadingPhrases[phraseIndex];
-            messages.scrollTop = messages.scrollHeight;
-        }, 1500);
-
         return {
             row: row,
-            stop: function () {
-                clearInterval(timer);
-            },
+            stop: function () {},
         };
     }
 
-    // Reads the chatbot/stream.php SSE response and calls onDelta as each token chunk
-    // arrives, so the answer can be typed into the page as the model generates it.
+    /**
+     * Read the chatbot/stream.php SSE response and invoke onDelta with each token chunk.
+     * Returns an error message string if one was sent by the server, or null on success.
+     */
     async function streamAnswer(message, onDelta) {
         const response = await fetch('stream.php', {
             method: 'POST',
@@ -121,6 +202,7 @@
 
         const loading = startLoadingMessage();
         let answerBubble = null;
+        let fullAnswer = '';
 
         try {
             const errorMessage = await streamAnswer(message, function (delta) {
@@ -130,7 +212,8 @@
                     answerBubble = addMessage('', 'bot').querySelector('.bubble');
                 }
 
-                answerBubble.textContent += delta;
+                fullAnswer += delta;
+                answerBubble.innerHTML = parseMarkdown(fullAnswer);
                 messages.scrollTop = messages.scrollHeight;
             });
 

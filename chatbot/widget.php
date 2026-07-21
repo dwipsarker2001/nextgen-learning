@@ -6,8 +6,17 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
 
 // Pages nested under admin/ or student/ set $ngChatBasePath = '../' before including this file.
 $ngChatBasePath = $ngChatBasePath ?? '';
+$ngChatCssVer = file_exists(__DIR__ . '/assets/home-widget.css') ? filemtime(__DIR__ . '/assets/home-widget.css') : time();
+
+// Chat flow:
+//   User submits message -> home-widget.js POSTs to stream.php (SSE)
+//   -> stream.php sanitizes input, checks smalltalk.php for canned replies
+//   -> Otherwise extracts keywords via course_context.php, queries DB for course data
+//   -> Builds context string, calls openrouter_client.php which streams tokens
+//      from OpenRouter API back through SSE to the browser in real time.
+//   course-widget.js variant calls api.php (JSON, non-streaming) on the course page.
 ?>
-<link rel="stylesheet" href="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.css">
+<link rel="stylesheet" href="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.css?v=<?= $ngChatCssVer ?>">
 
 <div class="ng-chat-widget" id="ngChatWidget" data-base="<?= htmlspecialchars($ngChatBasePath) ?>">
     <button class="ng-chat-toggle" id="ngChatToggle" type="button" aria-label="Open course chatbot">
@@ -27,9 +36,7 @@ $ngChatBasePath = $ngChatBasePath ?? '';
 
         <div class="ng-chat-messages" id="ngChatMessages" aria-live="polite">
             <div class="ng-chat-message bot">
-                <div class="ng-chat-bubble">
-                    Hi. Ask me about course topics, duration, language, or pricing.
-                </div>
+                <div class="ng-chat-bubble">Hi. Ask me about course topics, duration, language, or pricing.</div>
             </div>
         </div>
 
@@ -43,4 +50,4 @@ $ngChatBasePath = $ngChatBasePath ?? '';
     </section>
 </div>
 
-<script src="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.js"></script>
+<script src="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.js?v=<?= file_exists(__DIR__ . '/assets/home-widget.js') ? filemtime(__DIR__ . '/assets/home-widget.js') : time() ?>"></script>

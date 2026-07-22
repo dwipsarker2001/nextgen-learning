@@ -12,6 +12,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
 require_once __DIR__ . '/openrouter_client.php';
+require_once __DIR__ . '/conversation.php';
 
 header('Content-Type: text/event-stream; charset=utf-8');
 header('Cache-Control: no-cache');
@@ -73,9 +74,14 @@ try {
         exit;
     }
 
+    $history = chatbot_get_history();
+
     $smalltalkType = chatbot_detect_smalltalk($question);
     if ($smalltalkType !== null) {
-        chatbot_stream_static_text(chatbot_smalltalk_reply($smalltalkType));
+        $reply = chatbot_smalltalk_reply($smalltalkType);
+        chatbot_stream_static_text($reply);
+        chatbot_append_history('user', $question, (int) $chatbot_config['max_history_messages']);
+        chatbot_append_history('assistant', $reply, (int) $chatbot_config['max_history_messages']);
         echo "data: [DONE]\n\n";
         flush();
         exit;
@@ -86,21 +92,34 @@ try {
     $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId));
 
     if ($context === '') {
-        chatbot_stream_static_text("I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.");
+        $reply = "I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.";
+        chatbot_stream_static_text($reply);
+        chatbot_append_history('user', $question, (int) $chatbot_config['max_history_messages']);
+        chatbot_append_history('assistant', $reply, (int) $chatbot_config['max_history_messages']);
         echo "data: [DONE]\n\n";
         flush();
         exit;
     }
 
-    chatbot_call_openrouter_stream($chatbot_config, $question, $context, function ($delta) {
+    $fullAnswer = '';
+    chatbot_call_openrouter_stream($chatbot_config, $question, $context, $history, function ($delta) use (&$fullAnswer) {
+        $fullAnswer .= $delta;
         chatbot_send_event(['delta' => $delta]);
     });
+
+    // A stray safety-classifier echo (rare on free models) shouldn't poison later turns,
+    // even though this turn already displayed it to the user.
+    $historyAnswer = chatbot_is_safety_stub($fullAnswer) ? '' : $fullAnswer;
+    chatbot_append_history('user', $question, (int) $chatbot_config['max_history_messages']);
+    if ($historyAnswer !== '') {
+        chatbot_append_history('assistant', $historyAnswer, (int) $chatbot_config['max_history_messages']);
+    }
 
     echo "data: [DONE]\n\n";
     flush();
 } catch (Throwable $e) {
     error_log('[NextGen Course Chatbot] ' . $e->getMessage());
-    chatbot_send_event(['error' => 'The chatbot could not answer right now. Please check the chatbot setup and server logs.']);
+    chatbot_send_event(['error' => chatbot_friendly_error_message($e)]);
     echo "data: [DONE]\n\n";
     flush();
 }

@@ -17,7 +17,11 @@
       "Bash(git check-ignore *)",
       "Bash(php -r ' *)",
       "Bash(php -l openrouter_client.php)",
-      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H 'Content-Type: application/json' -d '{\"message\":\"which courses are free\"}' --max-time 30)"
+      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H 'Content-Type: application/json' -d '{\"message\":\"which courses are free\"}' --max-time 30)",
+      "Bash(tail -c 2000 \"c:/xampp/apache/logs/error.log\" 2>/dev/null | grep -i \"chatbot\\\\|fallback\\\\|warning\")",
+      "Read(//c/xampp/apache/logs/**)",
+      "Bash(tail -c 3000 \"c:/xampp/apache/logs/error.log\" 2>/dev/null | grep -i \"chatbot\\\\|fallback\\\\|warning\")",
+      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H \"Content-Type: application/json\" -d '{\"message\":\"hi\"}' --max-time 15)"
     ]
   }
 }

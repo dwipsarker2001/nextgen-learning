@@ -52,4 +52,5 @@ $chatbot_config = [
     'max_question_length' => 1000,
     'max_context_chars' => 6000,
     'max_context_rows' => 40,
+    'max_history_messages' => 12,
 ];

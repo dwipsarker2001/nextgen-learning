@@ -21,7 +21,12 @@
       "Bash(tail -c 2000 \"c:/xampp/apache/logs/error.log\" 2>/dev/null | grep -i \"chatbot\\\\|fallback\\\\|warning\")",
       "Read(//c/xampp/apache/logs/**)",
       "Bash(tail -c 3000 \"c:/xampp/apache/logs/error.log\" 2>/dev/null | grep -i \"chatbot\\\\|fallback\\\\|warning\")",
-      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H \"Content-Type: application/json\" -d '{\"message\":\"hi\"}' --max-time 15)"
+      "Bash(curl -s -X POST http://localhost/nextgen-learning/chatbot/api.php -H \"Content-Type: application/json\" -d '{\"message\":\"hi\"}' --max-time 15)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(php -r 'echo date\\(\"Y-m-d H:i:s T\", 1784764800000/1000\\) . \"\\\\n\"; echo date\\(\"Y-m-d H:i:s\", time\\(\\)\\) . \" \\(server local now\\)\\\\n\";')",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"php -S 127.0.0.1:8912\")"
     ]
   }
 }

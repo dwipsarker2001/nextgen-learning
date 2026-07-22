@@ -666,6 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <div class="ng-chat-messages" id="ngChatMessages" aria-live="polite">
             <div class="ng-chat-message bot">
+                <div class="ng-chat-avatar"><i class="bi bi-robot"></i></div>
                 <div class="ng-chat-bubble">Ask me anything about this course — topics, duration, pricing, or lessons.</div>
             </div>
         </div>

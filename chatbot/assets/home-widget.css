@@ -100,6 +100,8 @@
 
 .ng-chat-message {
     display: flex;
+    align-items: flex-end;
+    gap: 8px;
     width: 100%;
 }
 
@@ -109,6 +111,26 @@
 
 .ng-chat-message.user {
     justify-content: flex-end;
+}
+
+.ng-chat-avatar {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.ng-chat-message.bot .ng-chat-avatar {
+    background: #0f172a;
+}
+
+.ng-chat-message.user .ng-chat-avatar {
+    background: #2563eb;
 }
 
 .ng-chat-bubble {

@@ -27,6 +27,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
 
             <div id="chatMessages" class="chatbot-messages" aria-live="polite">
                 <div class="chat-message bot">
+                    <div class="chat-avatar"><i class="bi bi-robot"></i></div>
                     <div class="bubble">Hi. Ask me about course topics, duration, language, pricing, or what you can learn.</div>
                 </div>
             </div>

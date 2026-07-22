@@ -99,6 +99,10 @@
         const row = document.createElement('div');
         row.className = 'ng-chat-message ' + type;
 
+        const avatar = document.createElement('div');
+        avatar.className = 'ng-chat-avatar';
+        avatar.innerHTML = type === 'user' ? '<i class="bi bi-person-fill"></i>' : '<i class="bi bi-robot"></i>';
+
         const bubble = document.createElement('div');
         bubble.className = 'ng-chat-bubble';
         if (type === 'bot') {
@@ -107,7 +111,14 @@
             bubble.textContent = text;
         }
 
-        row.appendChild(bubble);
+        if (type === 'user') {
+            row.appendChild(bubble);
+            row.appendChild(avatar);
+        } else {
+            row.appendChild(avatar);
+            row.appendChild(bubble);
+        }
+
         messages.appendChild(row);
         messages.scrollTop = messages.scrollHeight;
 

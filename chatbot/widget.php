@@ -36,6 +36,7 @@ $ngChatCssVer = file_exists(__DIR__ . '/assets/home-widget.css') ? filemtime(__D
 
         <div class="ng-chat-messages" id="ngChatMessages" aria-live="polite">
             <div class="ng-chat-message bot">
+                <div class="ng-chat-avatar"><i class="bi bi-robot"></i></div>
                 <div class="ng-chat-bubble">Hi. Ask me about course topics, duration, language, or pricing.</div>
             </div>
         </div>

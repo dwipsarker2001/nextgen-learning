@@ -49,8 +49,8 @@ sequenceDiagram
     participant SmallTalk as smalltalk.php
     participant Context as course_context.php
     participant DB as MySQL Database
-    participant AI as openrouter_client.php
-    participant OpenRouter as OpenRouter API<br/>(AI service)
+    participant AI as deepseek_client.php
+    participant DeepSeek as DeepSeek API<br/>(AI service)
 
     You->>Browser: Type a question & press Send
     Browser->>Widget: Submit event
@@ -68,8 +68,8 @@ sequenceDiagram
         Context->>Context: Build short "context" string
         Context-->>Stream: Course context
         Stream->>AI: Context + question
-        AI->>OpenRouter: Ask AI to answer (using context only)
-        OpenRouter-->>AI: Stream answer token-by-token
+        AI->>DeepSeek: Ask AI to answer (using context only)
+        DeepSeek-->>AI: Stream answer token-by-token
         AI-->>Stream: Forward each word piece
         Stream-->>Widget: Send each word piece (SSE)
         Widget-->>Browser: Append word to chat bubble<br/>(typing effect)
@@ -96,7 +96,7 @@ If you ask something like "What is in the Python course?" or "Which courses are 
 1. **Extracts keywords** from your question (e.g., "Python", "free", "HTML")
 2. **Queries the database** to find courses, lectures, and topics matching those keywords
 3. **Builds a "context" string** — a short summary of the matching course data
-4. **Sends that context + your question** to an AI model (via OpenRouter)
+4. **Sends that context + your question** to the DeepSeek AI model (via DeepSeek API)
 5. The **AI reads only that context** and answers your question based on it
 6. The answer is **streamed back** word by word (like someone typing in real time)
 
@@ -119,12 +119,15 @@ Both do the same job: take your question, send it to the server, and show the an
 
 ## 6. The AI Model and API Key
 
-The chatbot uses **OpenRouter**, a service that gives access to many AI models (like Google's Gemma, OpenAI's GPT, etc.). The system tries models in order and falls back to the next one if the first fails.
+The chatbot uses **DeepSeek Platform AI** (`deepseek-chat` / DeepSeek models).
 
-To make it work, someone must:
-1. Create a free account at [openrouter.ai](https://openrouter.ai)
-2. Get an API key
-3. Set it as an environment variable named `OPENROUTER_API_KEY` on the server
+To make it work, set up your `.env` file with your DeepSeek API key:
+1. Get an API key from [platform.deepseek.com](https://platform.deepseek.com)
+2. Add your key to `.env` or `chatbot/.env`:
+   ```env
+   DEEPSEEK_API_KEY=your_deepseek_api_key_here
+   DEEPSEEK_MODEL=deepseek-chat
+   ```
 
 The API key never leaves the server — it is never sent to your browser or visible in the page source.
 
@@ -134,15 +137,16 @@ The API key never leaves the server — it is never sent to your browser or visi
 
 ```
 chatbot/
-├── config.php              — Reads API key and settings
+├── config.php              — Reads DeepSeek API key and settings
 ├── widget.php              — The HTML/CSS/JS that gets added to every page
 ├── stream.php              — Server endpoint (streaming, word-by-word answers)
 ├── api.php                 — Server endpoint (non-streaming, full answer at once)
 ├── smalltalk.php           — Detects greetings/thanks/goodbye
 ├── course_context.php      — Extracts keywords and queries the database
-├── openrouter_client.php   — Talks to the OpenRouter AI service
+├── deepseek_client.php     — Talks to the DeepSeek AI service
 ├── index.php               — Standalone full-page chatbot
 ├── quiz.php                — Generates quiz questions from course content
+├── .env.example            — Example environment variables
 ├── .env                    — Local environment variables (for development only)
 ├── .htaccess               — Security: blocks direct access to .env
 └── assets/
@@ -174,6 +178,6 @@ Each layout sets `$ngChatBasePath` correctly before including the widget so that
 3. **JavaScript sends** your question to `stream.php` on the server
 4. **Server checks** if it's small talk (canned reply) or a real question
 5. **For real questions**, the server looks up courses in the database
-6. **Course data + question** sent to an AI model via OpenRouter
+6. **Course data + question** sent to DeepSeek AI model
 7. **AI answers** based only on the course data provided
 8. **Answer streams back** word by word into the chat window

@@ -3,7 +3,7 @@
 $host = getenv('DB_HOST') ?: 'localhost';
 $username = getenv('DB_USER') ?: 'root';
 $password = getenv('DB_PASS') ?: '';
-$dbname = getenv('DB_NAME') ?: 'nextgen';
+$dbname = getenv('DB_NAME') ?: 'nextgen-learning';
 $port = (int)(getenv('DB_PORT') ?: 3306);
 
 $conn = new mysqli($host, $username, $password, $dbname, $port);

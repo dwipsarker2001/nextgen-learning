@@ -38,8 +38,8 @@ $user = get_user($conn, $user_id);
     <link rel="stylesheet" type="text/css" href="../assets/vendor/font-awesome/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="../assets/vendor/choices/css/choices.min.css">
-    <link rel="stylesheet" type="text/css" href="../assets/vendor/glightbox/css/glightbox.css">
-    <link rel="stylesheet" type="text/css" href="../assets/vendor/quill/css/quill.snow.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
     <link rel="stylesheet" type="text/css" href="../assets/vendor/stepper/css/bs-stepper.min.css">
     <link rel="stylesheet" type="text/css" href="../assets/vendor/overlay-scrollbar/css/overlayscrollbars.min.css">
 
@@ -212,8 +212,8 @@ $user = get_user($conn, $user_id);
     <!-- Vendors -->
     <script src="../assets/vendor/purecounterjs/dist/purecounter_vanilla.js"></script>
     <script src="../assets/vendor/choices/js/choices.min.js"></script>
-    <script src="../assets/vendor/glightbox/js/glightbox.js"></script>
-    <script src="../https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script src="../assets/vendor/stepper/js/bs-stepper.min.js"></script>
     <script src="../assets/vendor/overlay-scrollbar/js/overlayscrollbars.min.js"></script>
     <script src="../assets/js/pass_show_hide.js"></script>
@@ -221,7 +221,7 @@ $user = get_user($conn, $user_id);
     <!-- Template Functions -->
     <script src="../assets/js/functions.js"></script>
 
-    <?php $ngChatBasePath = '../'; include '../chatbot/widget.php'; ?>
+    <?php if (empty($hide_default_chatbot)) { $ngChatBasePath = '../'; include '../chatbot/widget.php'; } ?>
 
 </body>
 

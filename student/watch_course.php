@@ -282,6 +282,34 @@ ob_start();
         background: linear-gradient(90deg, #e11d48, #f43f5e);
         transition: width 0.4s ease;
     }
+    #quizModal .text-muted {
+        color: #64748b !important;
+    }
+    #quizModal .modal-title,
+    #quizModal h5 {
+        color: #0f172a !important;
+    }
+    #quizResultTitle {
+        color: #0f172a !important;
+    }
+    #quizResultMsg {
+        color: #475569 !important;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    #quizCounter {
+        color: #64748b !important;
+        font-weight: 600;
+    }
+    #quizQuestion {
+        color: #0f172a !important;
+    }
+    .quiz-option {
+        color: #1e293b;
+    }
+    #quizExplanation {
+        color: #334155 !important;
+    }
 
     @media (max-width: 991px) {
         .curriculum-card { height: 500px; margin-top: 2rem; }
@@ -410,8 +438,25 @@ ob_start();
                 </div>
 
                 <div id="quizLoader" class="d-none text-center py-5">
-                    <div class="spinner-border text-primary mb-3" role="status"></div>
-                    <p class="text-muted">Generating quiz questions...</p>
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Generating Quiz Questions...</h5>
+                    <p class="text-muted small mb-0">Our AI is preparing custom questions based on this lesson content. Please wait a moment.</p>
+                </div>
+
+                <div id="quizErrorArea" class="d-none text-center py-4">
+                    <div class="text-danger mb-3" style="font-size: 2.5rem;">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Quiz Generation Failed</h5>
+                    <p class="text-muted mb-4" id="quizErrorMessage">Unable to generate quiz questions at this moment. Please try again.</p>
+                    <button class="btn btn-outline-secondary rounded-pill px-4 me-2" onclick="closeQuiz()">
+                        <i class="fas fa-times me-1"></i> Close
+                    </button>
+                    <button class="btn btn-primary rounded-pill px-4" onclick="startQuiz()">
+                        <i class="fas fa-redo me-1"></i> Try Again
+                    </button>
                 </div>
 
             </div>
@@ -470,24 +515,53 @@ function logWatch(topicId, courseId) {
 let quizQuestions = [];
 let quizIndex = 0;
 let quizScore = 0;
+let isQuizLoading = false;
+
+function setQuizBtnLoading(loading) {
+    const quizBtn = document.getElementById('quizBtn');
+    if (!quizBtn) return;
+    if (loading) {
+        quizBtn.disabled = true;
+        quizBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Generating...';
+    } else {
+        quizBtn.disabled = false;
+        quizBtn.innerHTML = '<i class="fas fa-question-circle me-1"></i> Quiz';
+    }
+}
 
 function openQuiz() {
+    if (isQuizLoading) return;
+
     if (quizQuestions.length === 0) {
         startQuiz();
     } else {
-        const modal = new bootstrap.Modal(document.getElementById('quizModal'));
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('quizModal'));
         modal.show();
     }
 }
 
 function startQuiz() {
-    document.getElementById('quizQuestionArea').classList.add('d-none');
-    document.getElementById('quizResultArea').classList.add('d-none');
-    document.getElementById('quizLoader').classList.remove('d-none');
+    if (isQuizLoading) return;
+    if (!currentTopicId) {
+        alert('Please select a lesson first.');
+        return;
+    }
+
+    isQuizLoading = true;
+    setQuizBtnLoading(true);
 
     const topicItem = document.querySelector(`.play-video[data-topic-id="${currentTopicId}"]`);
     const topicTitle = topicItem ? topicItem.getAttribute('data-title') : 'this topic';
     document.getElementById('quizTopicLabel').textContent = 'Quiz: ' + topicTitle;
+
+    document.getElementById('quizQuestionArea').classList.add('d-none');
+    document.getElementById('quizResultArea').classList.add('d-none');
+    document.getElementById('quizErrorArea').classList.add('d-none');
+    document.getElementById('quizLoader').classList.remove('d-none');
+    document.getElementById('quizProgress').style.width = '0%';
+
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('quizModal'));
+    modal.show();
 
     fetch('../chatbot/quiz.php', {
         method: 'POST',
@@ -496,10 +570,14 @@ function startQuiz() {
     })
     .then(r => r.json())
     .then(data => {
+        isQuizLoading = false;
+        setQuizBtnLoading(false);
         document.getElementById('quizLoader').classList.add('d-none');
 
-        if (!data.success || !data.quiz || !data.quiz.questions) {
-            alert('Failed to generate quiz. Please try again.');
+        if (!data.success || !data.quiz || !data.quiz.questions || data.quiz.questions.length === 0) {
+            const msg = (data && data.message) ? data.message : 'Failed to generate quiz questions. Please try again.';
+            document.getElementById('quizErrorMessage').textContent = msg;
+            document.getElementById('quizErrorArea').classList.remove('d-none');
             return;
         }
 
@@ -507,13 +585,13 @@ function startQuiz() {
         quizIndex = 0;
         quizScore = 0;
         showQuestion();
-
-        const modal = new bootstrap.Modal(document.getElementById('quizModal'));
-        modal.show();
     })
     .catch(() => {
+        isQuizLoading = false;
+        setQuizBtnLoading(false);
         document.getElementById('quizLoader').classList.add('d-none');
-        alert('Network error. Please try again.');
+        document.getElementById('quizErrorMessage').textContent = 'Network error while connecting to server. Please try again.';
+        document.getElementById('quizErrorArea').classList.remove('d-none');
     });
 }
 
@@ -613,17 +691,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const title = element.getAttribute('data-title');
         const topicId = element.getAttribute('data-topic-id');
 
+        currentTopicId = topicId ? parseInt(topicId) : null;
+        quizQuestions = [];
+
         if (videoId && player && player.loadVideoById) {
             player.loadVideoById(videoId);
-            titleDisplay.innerText = title;
-            currentTopicId = topicId ? parseInt(topicId) : null;
+        }
 
-            playItems.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+        titleDisplay.innerText = title;
 
-            if (window.innerWidth < 992) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+        playItems.forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+
+        if (window.innerWidth < 992) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
@@ -648,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <link rel="stylesheet" href="../chatbot/assets/home-widget.css?v=<?= file_exists(__DIR__ . '/../chatbot/assets/home-widget.css') ? filemtime(__DIR__ . '/../chatbot/assets/home-widget.css') : time() ?>">
 
-<div class="ng-chat-widget" id="ngChatWidget">
+<div class="ng-chat-widget" id="ngChatWidget" data-base="../">
     <button class="ng-chat-toggle" id="ngChatToggle" type="button" aria-label="Ask about this course">
         <i class="bi bi-chat-dots-fill"></i>
     </button>
@@ -684,9 +765,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 window._ngCourseId = <?php echo (int) $course_id; ?>;
 </script>
-<script src="../chatbot/assets/course-widget.js"></script>
+<script src="../chatbot/assets/course-widget.js?v=<?= file_exists(__DIR__ . '/../chatbot/assets/course-widget.js') ? filemtime(__DIR__ . '/../chatbot/assets/course-widget.js') : time() ?>"></script>
 
 <?php
+$hide_default_chatbot = true;
 $content = ob_get_clean();
 include('../layouts/student.php');
 ?>

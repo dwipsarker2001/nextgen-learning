@@ -12,8 +12,8 @@ $ngChatCssVer = file_exists(__DIR__ . '/assets/home-widget.css') ? filemtime(__D
 //   User submits message -> home-widget.js POSTs to stream.php (SSE)
 //   -> stream.php sanitizes input, checks smalltalk.php for canned replies
 //   -> Otherwise extracts keywords via course_context.php, queries DB for course data
-//   -> Builds context string, calls openrouter_client.php which streams tokens
-//      from OpenRouter API back through SSE to the browser in real time.
+//   -> Builds context string, calls deepseek_client.php which streams tokens
+//      from DeepSeek API back through SSE to the browser in real time.
 //   course-widget.js variant calls api.php (JSON, non-streaming) on the course page.
 ?>
 <link rel="stylesheet" href="<?= htmlspecialchars($ngChatBasePath) ?>chatbot/assets/home-widget.css?v=<?= $ngChatCssVer ?>">

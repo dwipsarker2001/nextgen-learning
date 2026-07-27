@@ -54,11 +54,62 @@ function chatbot_extract_keywords($question)
 }
 
 /**
+ * Fetch a lightweight summary list of all active courses in the database.
+ */
+function chatbot_fetch_all_courses_summary($conn)
+{
+    $result = $conn->query("SELECT id, title, price, duration, status FROM courses ORDER BY id ASC");
+    if (!$result) {
+        return [];
+    }
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+/**
+ * Check if the user's question asks for general catalog/platform information.
+ */
+function chatbot_is_general_catalog_query($question)
+{
+    $q = strtolower($question);
+    $patterns = [
+        'how many',
+        'all course',
+        'all courses',
+        'total course',
+        'total courses',
+        'list course',
+        'list courses',
+        'available course',
+        'available courses',
+        'courses available',
+        'courses on website',
+        'courses in website',
+        'what courses',
+        'which courses',
+        'catalog',
+        'how many course',
+        'how many courses',
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (strpos($q, $pattern) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Fetch course rows matching the user's question keywords from the database.
  * Falls back to a general overview if no keyword matches are found.
  */
 function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseId = null)
 {
+    if ($courseId && chatbot_is_general_catalog_query($question)) {
+        $courseId = null;
+    }
+
     $keywords = chatbot_extract_keywords($question);
 
     if (empty($keywords)) {
@@ -251,9 +302,21 @@ function chatbot_fetch_student_enrollments($conn, $userId)
  * Includes student account status, enrollments, and structured course details
  * (title, lectures, topics) truncated to maxChars.
  */
-function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLoggedIn = false)
+function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLoggedIn = false, $allCoursesSummary = [])
 {
     $lines = [];
+
+    if (!empty($allCoursesSummary)) {
+        $lines[] = 'NextGen Learning Platform Summary:';
+        $lines[] = 'Total Courses Available on Website: ' . count($allCoursesSummary);
+        $lines[] = 'List of All Available Courses on Website:';
+        foreach ($allCoursesSummary as $ac) {
+            $priceRaw = (string) ($ac['price'] ?? '');
+            $priceStr = ($priceRaw === '0' || strtolower($priceRaw) === 'free' || trim($priceRaw) === '') ? 'Free' : $priceRaw . ' BDT (Tk)';
+            $lines[] = '- ' . $ac['title'] . ' (Price: ' . $priceStr . ')';
+        }
+        $lines[] = '';
+    }
 
     if ($isLoggedIn) {
         $lines[] = 'Student Account Status: Logged In';

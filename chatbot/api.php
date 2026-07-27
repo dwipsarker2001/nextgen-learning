@@ -12,7 +12,7 @@ require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
-require_once __DIR__ . '/openrouter_client.php';
+require_once __DIR__ . '/deepseek_client.php';
 require_once __DIR__ . '/conversation.php';
 
 try {
@@ -50,9 +50,10 @@ try {
         exit;
     }
 
+    $allCoursesSummary = chatbot_fetch_all_courses_summary($conn);
     $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
     $enrollments = chatbot_fetch_student_enrollments($conn, $userId);
-    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId));
+    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId), $allCoursesSummary);
 
     if ($context === '') {
         $reply = "I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.";
@@ -67,7 +68,7 @@ try {
         exit;
     }
 
-    $answer = chatbot_call_openrouter($chatbot_config, $question, $context, $history);
+    $answer = chatbot_call_deepseek($chatbot_config, $question, $context, $history);
     chatbot_append_history('user', $question, (int) $chatbot_config['max_history_messages']);
     chatbot_append_history('assistant', $answer, (int) $chatbot_config['max_history_messages']);
 

@@ -1,4 +1,5 @@
 (function () {
+    const widget = document.getElementById('ngChatWidget');
     const toggle = document.getElementById('ngChatToggle');
     const close = document.getElementById('ngChatClose');
     const windowEl = document.getElementById('ngChatWindow');
@@ -6,10 +7,11 @@
     const input = document.getElementById('ngChatInput');
     const messages = document.getElementById('ngChatMessages');
 
-    if (!toggle || !close || !windowEl || !form || !input || !messages) {
+    if (!widget || !toggle || !close || !windowEl || !form || !input || !messages) {
         return;
     }
 
+    const basePath = widget.dataset.base || '';
     const courseId = window._ngCourseId || null;
 
     /**
@@ -54,16 +56,24 @@
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
-            let unorderedMatch = line.match(/^\s*[\-\*]\s+(.*)/);
-            let orderedMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
+            let unorderedMatch = line.match(/^\s*[\-\*\•]\s+(.*)/);
+            let orderedMatch = line.match(/^\s*(\d+)[\.\)]\s+(.*)/);
 
             if (unorderedMatch) {
+                if (inList && inList !== 'ul') {
+                    result.push('</' + inList + '>');
+                    inList = false;
+                }
                 if (!inList) {
                     result.push('<ul class="chat-markdown-list">');
                     inList = 'ul';
                 }
                 result.push('<li>' + unorderedMatch[1] + '</li>');
             } else if (orderedMatch) {
+                if (inList && inList !== 'ol') {
+                    result.push('</' + inList + '>');
+                    inList = false;
+                }
                 if (!inList) {
                     result.push('<ol class="chat-markdown-list">');
                     inList = 'ol';
@@ -82,8 +92,11 @@
         }
         html = result.join('\n');
 
-        html = html.replace(/(<\/h[2-4]>|<\/ul>|<\/ol>|<\/pre>)\n/gi, '$1');
-        html = html.replace(/\n/g, '<br>');
+        // Prevent extra <br> insertions around block-level HTML tags
+        html = html.replace(/(<\/(?:h[1-6]|ul|ol|li|pre|p|blockquote)>)\n+/gi, '$1');
+        html = html.replace(/\n+(<(?:h[1-6]|ul|ol|li|pre|p|blockquote)[^>]*>)/gi, '$1');
+        html = html.replace(/<li[^>]*>\n+/gi, '<li>');
+        html = html.replace(/\n+/g, '<br>');
 
         return html;
     }
@@ -163,7 +176,7 @@
                 body.course_id = courseId;
             }
 
-            const response = await fetch('chatbot/api.php', {
+            const response = await fetch(basePath + 'chatbot/api.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,6 +195,7 @@
 
             addMessage(data.answer, 'bot');
         } catch (error) {
+            console.error('[Chatbot error]', error);
             loadingRow.remove();
             addMessage('The chatbot could not connect to the server. Please try again.', 'bot');
         } finally {

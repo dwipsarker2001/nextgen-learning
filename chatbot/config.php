@@ -39,16 +39,9 @@ chatbot_load_env_file(__DIR__ . '/.env');
 chatbot_load_env_file(dirname(__DIR__) . '/.env');
 
 $chatbot_config = [
-    'openrouter_api_key' => getenv('OPENROUTER_API_KEY') ?: '',
-    'openrouter_model' => getenv('OPENROUTER_MODEL') ?: 'google/gemma-4-26b-a4b-it:free',
-    'openrouter_fallback_models' => [
-        'google/gemma-4-26b-a4b-it:free',
-        'openai/gpt-oss-20b:free',
-        'openrouter/free',
-    ],
-    'openrouter_endpoint' => getenv('OPENROUTER_ENDPOINT') ?: 'https://openrouter.ai/api/v1/chat/completions',
-    'openrouter_site_url' => getenv('OPENROUTER_SITE_URL') ?: 'http://localhost/nextgen-learning/',
-    'openrouter_site_title' => getenv('OPENROUTER_SITE_TITLE') ?: 'NextGen Learning',
+    'deepseek_api_key' => getenv('DEEPSEEK_API_KEY') ?: 'sk-a1a9602882da412e9a57af53e11c3104',
+    'deepseek_model' => getenv('DEEPSEEK_MODEL') ?: 'deepseek-v4-flash',
+    'deepseek_endpoint' => getenv('DEEPSEEK_ENDPOINT') ?: 'https://api.deepseek.com/chat/completions',
     'max_question_length' => 1000,
     'max_context_chars' => 6000,
     'max_context_rows' => 40,

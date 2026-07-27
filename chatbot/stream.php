@@ -11,7 +11,7 @@ require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/smalltalk.php';
 require_once __DIR__ . '/course_context.php';
-require_once __DIR__ . '/openrouter_client.php';
+require_once __DIR__ . '/deepseek_client.php';
 require_once __DIR__ . '/conversation.php';
 
 header('Content-Type: text/event-stream; charset=utf-8');
@@ -87,9 +87,10 @@ try {
         exit;
     }
 
+    $allCoursesSummary = chatbot_fetch_all_courses_summary($conn);
     $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
     $enrollments = chatbot_fetch_student_enrollments($conn, $userId);
-    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId));
+    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId), $allCoursesSummary);
 
     if ($context === '') {
         $reply = "I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.";
@@ -102,7 +103,7 @@ try {
     }
 
     $fullAnswer = '';
-    chatbot_call_openrouter_stream($chatbot_config, $question, $context, $history, function ($delta) use (&$fullAnswer) {
+    chatbot_call_deepseek_stream($chatbot_config, $question, $context, $history, function ($delta) use (&$fullAnswer) {
         $fullAnswer .= $delta;
         chatbot_send_event(['delta' => $delta]);
     });

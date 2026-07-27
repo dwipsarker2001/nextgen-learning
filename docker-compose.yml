@@ -10,7 +10,7 @@ services:
       DB_HOST: db
       DB_USER: root
       DB_PASS: rootpassword
-      DB_NAME: nextgen
+      DB_NAME: nextgen-learning
     depends_on:
       db:
         condition: service_healthy
@@ -24,7 +24,7 @@ services:
     container_name: nextgen-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: nextgen
+      MYSQL_DATABASE: nextgen-learning
     ports:
       - "3307:3306"
     volumes:

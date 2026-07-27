@@ -248,7 +248,12 @@ ob_start();
 
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
-                    <div class="stat-card card card-body bg-primary bg-opacity-10 p-3 p-md-4 h-100">
+                    <div class="stat-card card card-body bg-primary bg-opacity-10 p-3 p-md-4 h-100"
+                         role="button"
+                         tabindex="0"
+                         onclick="const t = document.getElementById('courses-tab'); if (t) { new bootstrap.Tab(t).show(); }"
+                         style="cursor: pointer;"
+                         title="Go to My Courses">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h2 class="fw-bold mb-0 text-primary"><?= $enrolled_count ?></h2>
@@ -261,7 +266,12 @@ ob_start();
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="stat-card card card-body bg-success bg-opacity-10 p-3 p-md-4 h-100">
+                    <div class="stat-card card card-body bg-success bg-opacity-10 p-3 p-md-4 h-100"
+                         role="button"
+                         tabindex="0"
+                         onclick="const t = document.getElementById('courses-tab'); if (t) { new bootstrap.Tab(t).show(); }"
+                         style="cursor: pointer;"
+                         title="Go to My Courses">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h2 class="fw-bold mb-0 text-success"><?= $completed_courses ?></h2>
@@ -464,11 +474,27 @@ ob_start();
 
         </div>
 
-    </div>
-
     <?php endif; ?>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'courses' || window.location.hash === '#courses') {
+        const coursesTabBtn = document.getElementById('courses-tab');
+        if (coursesTabBtn) {
+            new bootstrap.Tab(coursesTabBtn).show();
+        }
+    } else if (tabParam === 'explore' || window.location.hash === '#explore') {
+        const exploreTabBtn = document.getElementById('explore-tab');
+        if (exploreTabBtn) {
+            new bootstrap.Tab(exploreTabBtn).show();
+        }
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();

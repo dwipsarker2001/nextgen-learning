@@ -58,16 +58,24 @@
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
-            let unorderedMatch = line.match(/^\s*[\-\*]\s+(.*)/);
-            let orderedMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
+            let unorderedMatch = line.match(/^\s*[\-\*\•]\s+(.*)/);
+            let orderedMatch = line.match(/^\s*(\d+)[\.\)]\s+(.*)/);
 
             if (unorderedMatch) {
+                if (inList && inList !== 'ul') {
+                    result.push('</' + inList + '>');
+                    inList = false;
+                }
                 if (!inList) {
                     result.push('<ul class="chat-markdown-list">');
                     inList = 'ul';
                 }
                 result.push('<li>' + unorderedMatch[1] + '</li>');
             } else if (orderedMatch) {
+                if (inList && inList !== 'ol') {
+                    result.push('</' + inList + '>');
+                    inList = false;
+                }
                 if (!inList) {
                     result.push('<ol class="chat-markdown-list">');
                     inList = 'ol';
@@ -86,8 +94,11 @@
         }
         html = result.join('\n');
 
-        html = html.replace(/(<\/h[2-4]>|<\/ul>|<\/ol>|<\/pre>)\n/gi, '$1');
-        html = html.replace(/\n/g, '<br>');
+        // Prevent extra <br> insertions around block-level HTML tags
+        html = html.replace(/(<\/(?:h[1-6]|ul|ol|li|pre|p|blockquote)>)\n+/gi, '$1');
+        html = html.replace(/\n+(<(?:h[1-6]|ul|ol|li|pre|p|blockquote)[^>]*>)/gi, '$1');
+        html = html.replace(/<li[^>]*>\n+/gi, '<li>');
+        html = html.replace(/\n+/g, '<br>');
 
         return html;
     }

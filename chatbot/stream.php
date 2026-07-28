@@ -90,7 +90,7 @@ try {
     $allCoursesSummary = chatbot_fetch_all_courses_summary($conn);
     $rows = chatbot_fetch_relevant_course_rows($conn, $question, (int) $chatbot_config['max_context_rows'], $courseId);
     $enrollments = chatbot_fetch_student_enrollments($conn, $userId);
-    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId), $allCoursesSummary);
+    $context = chatbot_build_context($rows, (int) $chatbot_config['max_context_chars'], $enrollments, !empty($userId), $allCoursesSummary, $courseId);
 
     if ($context === '') {
         $reply = "I don't have any course information for that yet. Try asking about a course by name, topic, price, or duration.";

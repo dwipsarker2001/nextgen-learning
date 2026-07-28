@@ -66,60 +66,11 @@ function chatbot_fetch_all_courses_summary($conn)
 }
 
 /**
- * Check if the user's question asks for general catalog/platform information.
+ * Run the keyword LIKE search across course/lecture/topic columns.
+ * Optionally scoped to a single course when $courseId is given.
  */
-function chatbot_is_general_catalog_query($question)
+function chatbot_run_keyword_search($conn, $keywords, $maxRows, $courseId = null)
 {
-    $q = strtolower($question);
-    $patterns = [
-        'how many',
-        'all course',
-        'all courses',
-        'total course',
-        'total courses',
-        'list course',
-        'list courses',
-        'available course',
-        'available courses',
-        'courses available',
-        'courses on website',
-        'courses in website',
-        'what courses',
-        'which courses',
-        'catalog',
-        'how many course',
-        'how many courses',
-    ];
-
-    foreach ($patterns as $pattern) {
-        if (strpos($q, $pattern) !== false) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Fetch course rows matching the user's question keywords from the database.
- * Falls back to a general overview if no keyword matches are found.
- */
-function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseId = null)
-{
-    if ($courseId && chatbot_is_general_catalog_query($question)) {
-        $courseId = null;
-    }
-
-    $keywords = chatbot_extract_keywords($question);
-
-    if (empty($keywords)) {
-        return chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId);
-    }
-
-    if (in_array('free', $keywords, true)) {
-        $keywords[] = '0';
-    }
-
     $columns = [
         'c.title',
         'c.short_desc',
@@ -183,12 +134,76 @@ function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseI
     $params[] = $maxRows;
     $types = str_repeat('s', count($params) - 1 - ($courseId ? 1 : 0)) . ($courseId ? 'i' : '') . 'i';
 
-    $rows = chatbot_run_course_query($conn, $sql, $types, $params);
+    return chatbot_run_course_query($conn, $sql, $types, $params);
+}
 
-    // Keywords like "list" or "details" don't match any column but still describe
-    // a real request, so fall back to a general overview instead of an empty answer.
+/**
+ * Combine two row sets (e.g. "current course" rows and keyword-matched rows),
+ * keeping the $primaryRows order first and dropping duplicates, capped at $maxRows.
+ */
+function chatbot_merge_course_rows($primaryRows, $secondaryRows, $maxRows)
+{
+    $seen = [];
+    $merged = [];
+
+    foreach ([$primaryRows, $secondaryRows] as $rowSet) {
+        foreach ($rowSet as $row) {
+            $key = ($row['course_id'] ?? '') . ':' . ($row['lecture_id'] ?? '') . ':' . ($row['topic_id'] ?? '');
+            if (isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+            $merged[] = $row;
+
+            if (count($merged) >= $maxRows) {
+                return $merged;
+            }
+        }
+    }
+
+    return $merged;
+}
+
+/**
+ * Fetch course rows relevant to the user's question.
+ *
+ * By default ($strict = false), keyword matches are searched across the whole
+ * catalog rather than just $courseId, so a student can ask about a different
+ * course while browsing one. The current course's own rows are still always
+ * included so on-topic follow-ups keep working normally.
+ *
+ * Pass $strict = true (used by the quiz generator) to keep the old, exclusive
+ * per-course behavior, since a quiz must stay scoped to its own course/topic.
+ */
+function chatbot_fetch_relevant_course_rows($conn, $question, $maxRows, $courseId = null, $strict = false)
+{
+    $keywords = chatbot_extract_keywords($question);
+    if (in_array('free', $keywords, true)) {
+        $keywords[] = '0';
+    }
+
+    if ($strict && $courseId) {
+        if (empty($keywords)) {
+            return chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId);
+        }
+
+        $rows = chatbot_run_keyword_search($conn, $keywords, $maxRows, $courseId);
+
+        // Keywords like "list" or "details" don't match any column but still describe
+        // a real request, so fall back to this course's overview instead of an empty answer.
+        return empty($rows) ? chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId) : $rows;
+    }
+
+    $matchedRows = empty($keywords) ? [] : chatbot_run_keyword_search($conn, $keywords, $maxRows);
+    $currentCourseRows = $courseId ? chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId) : [];
+
+    $rows = chatbot_merge_course_rows($currentCourseRows, $matchedRows, $maxRows);
+
     if (empty($rows)) {
-        return chatbot_fetch_course_overview_rows($conn, $maxRows, $courseId);
+        // Nothing matched and there's no "current course" to fall back to -
+        // give a general overview so the assistant still has something to work with.
+        return chatbot_fetch_course_overview_rows($conn, $maxRows, null);
     }
 
     return $rows;
@@ -302,7 +317,7 @@ function chatbot_fetch_student_enrollments($conn, $userId)
  * Includes student account status, enrollments, and structured course details
  * (title, lectures, topics) truncated to maxChars.
  */
-function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLoggedIn = false, $allCoursesSummary = [])
+function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLoggedIn = false, $allCoursesSummary = [], $currentCourseId = null)
 {
     $lines = [];
 
@@ -378,11 +393,11 @@ function chatbot_build_context($rows, $maxChars, $studentEnrollments = [], $isLo
         }
     }
 
-    foreach ($courses as $course) {
+    foreach ($courses as $cId => $course) {
         $priceRaw = (string) $course['price'];
         $priceDisplay = ($priceRaw === '0' || strtolower($priceRaw) === 'free' || trim($priceRaw) === '') ? 'Free' : $priceRaw . ' BDT (Tk)';
 
-        $lines[] = 'Course: ' . $course['title'];
+        $lines[] = 'Course: ' . $course['title'] . ($currentCourseId && $cId === (int) $currentCourseId ? ' (this is the course the student is currently watching)' : '');
         $lines[] = 'Summary: ' . $course['short_desc'];
         $lines[] = 'Description: ' . $course['description'];
         $lines[] = 'Duration: ' . $course['duration'] . '; Language: ' . $course['language'] . '; Price: ' . $priceDisplay;

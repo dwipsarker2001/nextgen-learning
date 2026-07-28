@@ -48,7 +48,7 @@ try {
 
     $topic_title = $topic['title'];
 
-    $rows = chatbot_fetch_relevant_course_rows($conn, $topic_title, 20, $course_id);
+    $rows = chatbot_fetch_relevant_course_rows($conn, $topic_title, 20, $course_id, true);
     $context = chatbot_build_context($rows, 4000);
 
     $quiz = chatbot_call_deepseek_quiz($chatbot_config, $topic_title, $context);

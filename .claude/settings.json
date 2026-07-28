@@ -26,7 +26,8 @@
       "Bash(npm install *)",
       "Bash(php -r 'echo date\\(\"Y-m-d H:i:s T\", 1784764800000/1000\\) . \"\\\\n\"; echo date\\(\"Y-m-d H:i:s\", time\\(\\)\\) . \" \\(server local now\\)\\\\n\";')",
       "Bash(kill %1)",
-      "Bash(pkill -f \"php -S 127.0.0.1:8912\")"
+      "Bash(pkill -f \"php -S 127.0.0.1:8912\")",
+      "Bash(node scripts/validate_palette.js \"#2a78d6,#eb6834,#1baf7a,#eda100\" --mode light)"
     ]
   }
 }

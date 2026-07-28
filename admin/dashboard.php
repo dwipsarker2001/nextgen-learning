@@ -6,6 +6,7 @@ include '../includes/helpers.php';
 include '../includes/get_totals.php';
 include '../includes/get_record.php';
 include '../includes/get_records.php';
+include '../includes/get_chart_data.php';
 
 // variables
 $total_students = get_total_students($conn);
@@ -13,6 +14,16 @@ $total_courses = get_total_courses($conn);
 $total_instructors = get_total_instructors($conn);
 $total_earnings = get_total_earnings($conn);
 $page_title = "Dashboard | Nextgen Learning";
+
+// chart data
+$chart_data = [
+  'enrollmentTrend' => get_enrollment_trend($conn, 6),
+  'revenueTrend' => get_revenue_trend($conn, 6),
+  'coursePopularity' => get_course_popularity($conn, 10),
+  'enrollmentStatus' => get_enrollment_status_breakdown($conn),
+  'coursePerformance' => get_course_performance_radar($conn, 4),
+];
+
 ob_start();
 ?>
 
@@ -97,10 +108,71 @@ ob_start();
 	</div>
 	<!-- Counter boxes END -->
 
+	<!-- Charts row 1 START -->
+	<div class="row g-4 mb-4">
+		<div class="col-lg-6">
+			<div class="card card-body p-4 h-100">
+				<h6 class="mb-3">Enrollment Trend <span class="text-body-secondary fw-normal">(last 6 months)</span></h6>
+				<div style="height: 260px;">
+					<canvas id="enrollmentTrendChart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="card card-body p-4 h-100">
+				<h6 class="mb-3">Revenue Trend <span class="text-body-secondary fw-normal">(last 6 months)</span></h6>
+				<div style="height: 260px;">
+					<canvas id="revenueTrendChart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Charts row 1 END -->
+
+	<!-- Charts row 2 START -->
+	<div class="row g-4 mb-4">
+		<div class="col-lg-7">
+			<div class="card card-body p-4 h-100">
+				<h6 class="mb-3">Most Popular Courses <span class="text-body-secondary fw-normal">(by enrollments)</span></h6>
+				<div style="height: 300px;">
+					<canvas id="coursePopularityChart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-5">
+			<div class="card card-body p-4 h-100">
+				<h6 class="mb-3">Enrollment Status</h6>
+				<div style="height: 300px;">
+					<canvas id="enrollmentStatusChart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Charts row 2 END -->
+
+	<!-- Charts row 3 START -->
+	<div class="row g-4 mb-4">
+		<div class="col-lg-8">
+			<div class="card card-body p-4 h-100">
+				<h6 class="mb-3">Course Performance <span class="text-body-secondary fw-normal">(top courses, normalized)</span></h6>
+				<div style="height: 320px;">
+					<canvas id="coursePerformanceRadar"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Charts row 3 END -->
+
 </div>
 <!-- Page main content END -->
 </div>
 <!-- Page content END -->
+
+<script>
+window.dashboardChartData = <?= json_encode($chart_data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+</script>
+<script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
+<script src="../assets/js/dashboard-charts.js"></script>
 
 
 

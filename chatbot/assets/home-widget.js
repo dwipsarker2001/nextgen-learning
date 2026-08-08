@@ -1,4 +1,12 @@
 (function () {
+/*
+ * home-widget.js
+ * Floating chatbot widget used on most site pages via `chatbot/widget.php`.
+ * - Sends messages to `chatbot/stream.php` (Server-Sent Events) and
+ *   displays the answer token-by-token (typing effect).
+ * - Uses `ngChat*` DOM IDs/classes produced by `widget.php` and a `basePath`
+ *   data attribute so it works from subfolders (admin/, student/).
+ */
     const widget = document.getElementById('ngChatWidget');
     const toggle = document.getElementById('ngChatToggle');
     const close = document.getElementById('ngChatClose');
@@ -18,6 +26,9 @@
 
     /**
      * Convert Markdown text to safe HTML for chat bubble rendering.
+     * - Escapes HTML to prevent injection, then supports basic Markdown:
+     *   code blocks, inline code, bold, italic, links, headings, lists.
+     * - Returns safe HTML suitable for insertion into the bot bubble.
      */
     function parseMarkdown(text) {
         if (!text) return '';
@@ -105,6 +116,8 @@
 
     /**
      * Append a chat message row (user or bot) to the widget and scroll to the bottom.
+     * - `type` is either 'user' or 'bot'.
+     * - For bot messages we render parsed Markdown; user messages use plain text.
      */
     function addMessage(text, type) {
         const row = document.createElement('div');
@@ -138,6 +151,7 @@
 
     /**
      * Enable or disable the form inputs during a request.
+     * Disables the send button and textarea while waiting for a reply.
      */
     function setLoading(isLoading) {
         form.querySelector('button').disabled = isLoading;
@@ -146,6 +160,7 @@
 
     /**
      * Show a "Typing..." loading indicator in the widget's bot message row.
+     * Returns an object with `row` so caller can remove the placeholder later.
      */
     function startLoadingMessage() {
         const row = addMessage('Typing...', 'bot');
@@ -159,8 +174,11 @@
     }
 
     /**
-     * Read the chatbot/stream.php SSE response and invoke onDelta with each token chunk.
-     * Returns an error message string or null on success.
+     * Read the chatbot/stream.php SSE response and invoke `onDelta` with each token chunk.
+     * - Uses the Fetch ReadableStream reader to process streaming `text/event-stream` data.
+     * - Parses events that start with `data: ` containing JSON with { delta } or { error }.
+     * - Calls `onDelta(delta)` for each partial token received so the UI can append it.
+     * - Returns an error message string if the server sent an error, or null on success.
      */
     async function streamAnswer(message, onDelta) {
         const response = await fetch(basePath + 'chatbot/stream.php', {
@@ -232,6 +250,10 @@
     });
 
     // When form is submitted, send the message to the server and stream the answer back.
+    // Sequence:
+    // 1. Add user bubble and show "Typing..."
+    // 2. Call `streamAnswer()` and append `delta` chunks as they arrive
+    // 3. Replace the loading row with the final bot bubble (built incrementally)
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 

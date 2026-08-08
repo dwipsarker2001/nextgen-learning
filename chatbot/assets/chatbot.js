@@ -1,3 +1,9 @@
+/*
+ * chatbot.js
+ * Full-page chatbot behavior for `chatbot/index.php`.
+ * - Uses `stream.php` via Fetch + ReadableStream to display streaming answers.
+ * - Uses different DOM IDs/classes from the widget variants (chatForm, chatMessages).
+ */
 (function () {
     const form = document.getElementById('chatForm');
     const input = document.getElementById('chatInput');
@@ -6,6 +12,7 @@
 
     /**
      * Convert Markdown text to safe HTML for chat bubble rendering.
+     * Same implementation as the widget variants to ensure consistent output.
      */
     function parseMarkdown(text) {
         if (!text) return '';
@@ -93,6 +100,7 @@
 
     /**
      * Append a chat message row (user or bot) to the message container and scroll down.
+     * Uses the full-page CSS classes `.chat-message` and `.bubble`.
      */
     function addMessage(text, type) {
         const row = document.createElement('div');
@@ -148,8 +156,9 @@
     }
 
     /**
-     * Read the chatbot/stream.php SSE response and invoke onDelta with each token chunk.
-     * Returns an error message string if one was sent by the server, or null on success.
+     * Read the chatbot/stream.php SSE response and invoke `onDelta` with each token chunk.
+     * Matches `home-widget.js` streaming behavior but uses relative paths appropriate
+     * for the standalone page (calls `stream.php` in the same folder).
      */
     async function streamAnswer(message, onDelta) {
         const response = await fetch('stream.php', {

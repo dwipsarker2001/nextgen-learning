@@ -104,16 +104,15 @@ If no matching courses are found in the database, the chatbot says: *"I don't ha
 
 ---
 
-## 5. The Two JavaScript Versions
+## 5. JavaScript files (what's actually in `chatbot/assets`)
 
-There are two JavaScript files that power the chat. They work almost the same way, but talk to different server endpoints:
+There are three front-end scripts in `chatbot/assets/` and each has a specific role:
 
-| JavaScript file | Used on | Talks to | How the answer arrives |
-|---|---|---|---|
-| `home-widget.js` | All regular pages (public, student dashboard, admin) | `stream.php` | **Word by word** (streaming) — you see the answer being typed out |
-| `course-widget.js` | The course watch page (`student/watch_course.php`) | `api.php` | **All at once** (non-streaming) — the full answer appears after a moment |
+- `home-widget.js` — The floating widget used by pages that include `chatbot/widget.php` (layouts: `layouts/website.php`, `layouts/student.php`, `layouts/admin.php`). It posts the user's message to `stream.php` and receives the answer via Server-Sent Events (SSE), showing it word-by-word.
+- `course-widget.js` — Used on the course watch page (`student/watch_course.php`) where a non-streaming JSON endpoint is preferred. It talks to `api.php` and displays the full answer when the response is complete.
+- `chatbot.js` — Used only by the standalone chatbot page (`chatbot/index.php`) together with `chatbot.css`. This provides the full-page chatbot UI and talks to the same server endpoints (usually `stream.php` for streaming behavior).
 
-Both do the same job: take your question, send it to the server, and show the answer.
+All assets are included with cache-busting query strings (file modification time) by the PHP includes.
 
 ---
 
@@ -138,23 +137,23 @@ The API key never leaves the server — it is never sent to your browser or visi
 ```
 chatbot/
 ├── config.php              — Reads DeepSeek API key and settings
-├── widget.php              — The HTML/CSS/JS that gets added to every page
-├── stream.php              — Server endpoint (streaming, word-by-word answers)
-├── api.php                 — Server endpoint (non-streaming, full answer at once)
-├── smalltalk.php           — Detects greetings/thanks/goodbye
+├── widget.php              — Outputs the floating widget HTML/CSS and includes `home-widget.js`
+├── stream.php              — Server endpoint (streaming, word-by-word answers via SSE)
+├── api.php                 — Server endpoint (non-streaming, full answer JSON)
+├── smalltalk.php           — Detects greetings/thanks/goodbye (canned replies)
 ├── course_context.php      — Extracts keywords and queries the database
 ├── deepseek_client.php     — Talks to the DeepSeek AI service
-├── index.php               — Standalone full-page chatbot
+├── index.php               — Standalone full-page chatbot (uses `chatbot.js`)
 ├── quiz.php                — Generates quiz questions from course content
 ├── .env.example            — Example environment variables
 ├── .env                    — Local environment variables (for development only)
 ├── .htaccess               — Security: blocks direct access to .env
 └── assets/
     ├── home-widget.css     — Styles for the floating chat widget
-    ├── home-widget.js      — Interactive behavior for the floating widget
-    ├── course-widget.js    — Interactive behavior for the course-page widget
+    ├── home-widget.js      — Floating widget behavior (posts to `stream.php`, uses SSE)
+    ├── course-widget.js    — Course-page behavior (posts to `api.php`, non-streaming)
     ├── chatbot.css         — Styles for the standalone chatbot page
-    └── chatbot.js          — Interactive behavior for the standalone chatbot page
+    └── chatbot.js          — Standalone page behavior (used by `chatbot/index.php`)
 ```
 
 ---

@@ -1,3 +1,10 @@
+/*
+ * course-widget.js
+ * Chat widget variant for the course watch page.
+ * - Posts messages as JSON to `chatbot/api.php` and expects a full JSON reply.
+ * - Does not stream token-by-token; it shows the complete answer after the request.
+ * - If present, `window._ngCourseId` is included in the request to scope answers.
+ */
 (function () {
     const widget = document.getElementById('ngChatWidget');
     const toggle = document.getElementById('ngChatToggle');
@@ -16,6 +23,8 @@
 
     /**
      * Convert Markdown text to safe HTML for chat bubble rendering.
+     * Behavior mirrors `home-widget.js` parseMarkdown implementation so messages
+     * render consistently across widget variants.
      */
     function parseMarkdown(text) {
         if (!text) return '';
@@ -103,6 +112,7 @@
 
     /**
      * Append a chat message row (user or bot) to the widget and scroll to the bottom.
+     * Same DOM structure as the floating widget so styles match.
      */
     function addMessage(text, type) {
         const row = document.createElement('div');
@@ -152,6 +162,8 @@
         toggle.focus();
     });
 
+    // On submit: send message (and optional course_id) to `chatbot/api.php`.
+    // The server returns a JSON response with `success` and `answer` fields.
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 

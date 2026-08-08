@@ -20,7 +20,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <div>
-                    <h1>NextGen Course Chatbot</h1>
+                    <h1>NextGen Course Chatbot hello</h1>
                     <p>Ask questions about available course content.</p>
                 </div>
             </header>

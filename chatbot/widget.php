@@ -43,7 +43,7 @@ $ngChatCssVer = file_exists(__DIR__ . '/assets/home-widget.css') ? filemtime(__D
 
         <form class="ng-chat-form" id="ngChatForm" autocomplete="off">
             <label class="ng-chat-sr-only" for="ngChatInput">Ask a course question</label>
-            <textarea id="ngChatInput" name="message" rows="2" maxlength="1000" placeholder="Ask about a course..." required></textarea>
+            <textarea id="ngChatInput" name="message" rows="2" maxlength="4000" placeholder="Ask about a course or paste code..." required></textarea>
             <button type="submit" aria-label="Send message">
                 <i class="bi bi-send"></i>
             </button>

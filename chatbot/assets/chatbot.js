@@ -24,7 +24,8 @@
 
         // Code blocks
         html = html.replace(/```([\s\S]*?)```/g, function (m, code) {
-            return '<pre><code>' + code.trim() + '</code></pre>';
+            let cleanCode = code.trim().replace(/^[a-zA-Z0-9_\-\+]+\n/, '');
+            return '<pre><code>' + cleanCode + '</code></pre>';
         });
 
         // Inline code

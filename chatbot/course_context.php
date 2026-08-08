@@ -6,13 +6,12 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
 
 /**
  * Sanitize and truncate a user question for safe use in queries.
- * Strips HTML tags, normalizes whitespace, and respects encoding for truncation.
+ * Normalizes whitespace and respects encoding for truncation while preserving HTML/XML tags.
  */
 function chatbot_sanitize_question($question, $maxLength)
 {
     $question = is_string($question) ? $question : '';
-    $question = strip_tags($question);
-    $question = preg_replace('/\s+/', ' ', $question);
+    $question = preg_replace('/\r\n?/', "\n", $question);
     $question = trim($question);
 
     if (function_exists('mb_substr')) {

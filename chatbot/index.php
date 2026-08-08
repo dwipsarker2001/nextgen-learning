@@ -34,7 +34,7 @@ $pageTitle = 'NextGen Course Chatbot | nextgen-learning';
 
             <form id="chatForm" class="chatbot-form" autocomplete="off">
                 <label class="sr-only" for="chatInput">Ask a course question</label>
-                <textarea id="chatInput" name="message" rows="2" maxlength="1000" placeholder="Ask about a course..." required></textarea>
+                <textarea id="chatInput" name="message" rows="2" maxlength="4000" placeholder="Ask about a course or paste code..." required></textarea>
                 <button type="submit" aria-label="Send message">
                     <i class="bi bi-send"></i>
                 </button>
